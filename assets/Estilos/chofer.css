@@ -1,55 +1,52 @@
 body {
-    background-color: #f2f8ff;
     font-family: Arial, sans-serif;
-    color: #222;
+    background-color: #f4f6f8;
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #0077cc;
+    background-color: #003366;
     color: white;
     text-align: center;
-    padding: 20px 0;
+    padding: 15px 0;
 }
 
-.contenedor {
+.container {
     width: 80%;
-    margin: 20px auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    margin: 30px auto;
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-label {
+h2 {
+    color: #003366;
+    border-bottom: 2px solid #003366;
+    padding-bottom: 5px;
+}
+
+input, select {
     display: block;
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="file"] {
-    width: 100%;
-    padding: 6px;
-    margin-top: 4px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
+    width: 60%;
+    margin: 8px auto;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 input[type="submit"] {
-    background-color: #0077cc;
+    width: 50%;
+    background-color: #007bff;
     color: white;
     border: none;
-    margin-top: 15px;
-    padding: 10px 15px;
+    padding: 10px;
     cursor: pointer;
-    border-radius: 4px;
 }
 
 input[type="submit"]:hover {
-    background-color: #005fa3;
+    background-color: #0056b3;
 }
 
 table {
@@ -58,14 +55,16 @@ table {
     margin-top: 15px;
 }
 
-th,
-td {
-    border: 1px solid #ddd;
+th, td {
+    border: 1px solid #ccc;
     padding: 8px;
     text-align: center;
 }
 
-th {
-    background-color: #0077cc;
+.btn-red {
+    background-color: #c0392b;
     color: white;
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 5px;
 }
