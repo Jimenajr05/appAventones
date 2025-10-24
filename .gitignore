@@ -1,0 +1,44 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Dependencias y directorios de entorno
+/vendor/
+node_modules/
+npm-debug.log
+
+# Archivos de configuración local
+.env
+config.php
+
+# Archivos de IDE/editores
+.idea/
+.vscode/
+*.swp
+*.swo
+.vs/
+
+# Archivos de caché y logs
+*.log
+/logs/*
+!/logs/.gitkeep
+.php_cs.cache
+
+# Archivos de usuario subidos
+/uploads/usuarios/*
+!/uploads/usuarios/.gitkeep
+/uploads/vehiculos/*
+!/uploads/vehiculos/.gitkeep
+
+# Archivos compilados
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Archivos temporales
+*.tmp
+*.temp
+.cache
