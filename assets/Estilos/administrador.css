@@ -1,30 +1,93 @@
+/* ======== ESTILO GLOBAL ======== */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f6;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f4f7f8;
     margin: 0;
     padding: 0;
 }
 
+/* ======== HEADER ======== */
 header {
-    background-color: #004d40;
-    color: white;
+    background: linear-gradient(90deg,#063125, #109686);
+    color: #fff;
     text-align: center;
-    padding: 20px;
+    padding: 25px 0;
+    position: relative;
 }
 
+header img {
+    display: block;
+    margin: 0 auto 10px;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+}
+
+header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+header .resaltado {
+    color: #ffc107;
+}
+
+.logout {
+    color: #ffc107;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.logout:hover {
+    text-decoration: underline;
+}
+
+/* ======== BOTÓN VOLVER ======== */
+.btn-volver-header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #fff;
+    color: #0B3D2E;
+    padding: 8px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.btn-volver-header:hover {
+    background-color: #ffc107;
+    color: #0B3D2E;
+}
+
+/* ======== CONTENEDOR PRINCIPAL ======== */
 .container {
-    width: 80%;
-    margin: 30px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 200%;
+    max-width: 1000px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+    color: #0B3D2E;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ======== TABLA ======== */
+.table-container {
+    overflow-x: auto;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 30px;
 }
 
 th, td {
@@ -34,29 +97,82 @@ th, td {
 }
 
 th {
-    background-color: #00796b;
+    background-color: #007bff;
     color: white;
 }
 
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.estado.activo {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.estado.inactivo {
+    color: #e53935;
+    font-weight: bold;
+}
+
+/* ======== BOTONES ======== */
 .btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     border-radius: 5px;
     text-decoration: none;
     color: white;
+    font-weight: bold;
+    display: inline-block;
 }
 
-.btn-green { background-color: #4caf50; }
-.btn-red { background-color: #e53935; }
+.btn-green { background-color: #28a745; }
+.btn-green:hover { background-color: #1e7e34; }
 
-form input {
-    display: block;
+.btn-red { background-color: #e53935; }
+.btn-red:hover { background-color: #c62828; }
+
+.btn-blue {
+    background-color: #007bff;
+}
+.btn-blue:hover {
+    background-color: #0056b3;
+}
+
+/* ======== FORMULARIO NUEVO ADMIN ======== */
+.form-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.form-admin input {
     width: 60%;
-    margin: 10px auto;
-    padding: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.3s ease;
+}
+
+.form-admin input:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
 .msg {
     text-align: center;
-    color: green;
+    color: #28a745;
     font-weight: bold;
+}
+
+/* ======== FOOTER ======== */
+footer {
+    text-align: center;
+    background-color: #0B3D2E;
+    color: white;
+    padding: 20px 0;
+    margin-top: 60px;
+    border-top: 3px solid #ffc107;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
 }

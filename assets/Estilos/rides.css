@@ -1,61 +1,82 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
+/* ======== BARRA SUPERIOR ======== */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-bottom: 2px solid #c5e0e9;
+    padding: 10px 40px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
-header {
-    background: #0B3D2E;
-    color: white;
-    text-align: center;
-    padding: 20px;
+
+.topbar .left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
-.container {
-    width: 90%;
-    margin: 30px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+
+.topbar .logo-nav {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }
-form {
-    margin-bottom: 40px;
+
+.topbar .brand {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0B3D2E;
+    margin-right: 10px;
 }
-label {
-    display: block;
-    margin-top: 10px;
+
+.topbar .link {
+    color: #0B3D2E;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.topbar .link:hover {
+    color: #007bff;
+}
+
+.topbar .active {
+    color: #007bff;
     font-weight: bold;
 }
-input, select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+
+.topbar .right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
-input[type="submit"] {
-    background: #007bff;
+
+.user-welcome {
+    color: #0B3D2E;
+    font-weight: 600;
+}
+
+.user-photo {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    object-fit: cover;
+    background-color: #e9ecef;
+}
+
+.logout-link {
+    background-color: #007bff;
     color: white;
-    border: none;
-    margin-top: 15px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-}
-th {
-    background: #007bff;
-    color: white;
-}
-a {
-    color: #007bff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
     text-decoration: none;
+    transition: all 0.3s ease;
 }
-a:hover {
-    text-decoration: underline;
+
+.logout-link:hover {
+    background-color: #0056b3;
 }

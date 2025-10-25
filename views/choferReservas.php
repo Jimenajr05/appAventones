@@ -8,68 +8,107 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
 }
 
 $idChofer = $_SESSION['id_usuario'];
+$fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
 $mensaje = $_GET['msg'] ?? "";
 
-$sql = "SELECT r.id_reserva, r.estado, u.nombre AS pasajero, d.nombre AS ride, d.inicio, d.fin, d.dia, d.hora
+// 🔹 Obtener reservas de los rides del chofer
+$sql = "SELECT r.id_reserva, r.estado, u.nombre AS pasajero, d.nombre AS ride, 
+               d.inicio, d.fin, d.dia, d.hora
         FROM reservas r
         JOIN rides d ON r.id_ride = d.id_ride
         JOIN usuarios u ON r.id_pasajero = u.id_usuario
-        WHERE d.id_chofer = '$idChofer'
+        WHERE d.id_chofer = ?
         ORDER BY r.fecha_reserva DESC";
-$reservas = mysqli_query($conexion, $sql);
+
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("i", $idChofer);
+$stmt->execute();
+$reservas = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reservas de Mis Rides</title>
+    <title>Reservas | Aventones</title>
     <link rel="stylesheet" href="../assets/Estilos/reservas.css">
 </head>
 <body>
-<header>
-    <h1>Reservas de Mis Rides 🚘</h1>
-    <nav>
-        <a href="chofer.php">Mis Rides</a> |
-        <a href="../logica/cerrarSesion.php">Cerrar Sesión</a>
-    </nav>
+
+<!-- 🟢 ENCABEZADO -->
+<header class="hero-header">
+    <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
+    <h1>Bienvenido <span class="resaltado">Aventones.com</span></h1>
+    <h2>Tu mejor opción para viajar seguros</h2>
 </header>
 
+<!-- ⚪ TOOLBAR -->
+<nav class="toolbar">
+    <div class="toolbar-left">
+        <a href="chofer.php" class="nav-link">Rides</a>
+        <a href="vehiculos.php" class="nav-link">Vehículos</a>
+        <a href="choferReservas.php" class="nav-link active">Reservas</a>
+    </div>
+    <div class="toolbar-right">
+        <span class="user-name"><?= htmlspecialchars($_SESSION['nombre']); ?></span>
+        <img src="<?= htmlspecialchars($fotoUsuario); ?>" alt="Usuario" class="user-photo">
+        <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
+    </div>
+</nav>
+
+<!-- 🧾 CONTENIDO -->
 <section class="container">
     <?php if ($mensaje): ?>
         <p class="alert"><?= htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
 
-    <table>
-        <tr>
-            <th>Pasajero</th>
-            <th>Ride</th>
-            <th>Inicio</th>
-            <th>Destino</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Estado</th>
-            <th>Acción</th>
-        </tr>
-        <?php while ($r = mysqli_fetch_assoc($reservas)): ?>
-        <tr>
-            <td><?= $r['pasajero']; ?></td>
-            <td><?= $r['ride']; ?></td>
-            <td><?= $r['inicio']; ?></td>
-            <td><?= $r['fin']; ?></td>
-            <td><?= $r['dia']; ?></td>
-            <td><?= $r['hora']; ?></td>
-            <td><?= $r['estado']; ?></td>
-            <td>
-                <?php if ($r['estado'] === 'pendiente'): ?>
-                    <a href="../logica/reservas.php?accion=aceptar&id=<?= $r['id_reserva']; ?>">Aceptar</a> |
-                    <a href="../logica/reservas.php?accion=rechazar&id=<?= $r['id_reserva']; ?>">Rechazar</a>
-                <?php else: ?>
-                    -
-                <?php endif; ?>
-            </td>
-        </tr>
-        <?php endwhile; ?>
-    </table>
+    <h2>Reservas de Mis Rides</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Pasajero</th>
+                    <th>Ride</th>
+                    <th>Inicio</th>
+                    <th>Destino</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($r = $reservas->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($r['pasajero']); ?></td>
+                    <td><?= htmlspecialchars($r['ride']); ?></td>
+                    <td><?= htmlspecialchars($r['inicio']); ?></td>
+                    <td><?= htmlspecialchars($r['fin']); ?></td>
+                    <td><?= htmlspecialchars($r['dia']); ?></td>
+                    <td><?= htmlspecialchars($r['hora']); ?></td>
+                    <td>
+                        <span class="estado <?= strtolower($r['estado']); ?>">
+                            <?= ucfirst($r['estado']); ?>
+                        </span>
+                    </td>
+                    <td>
+                        <?php if ($r['estado'] === 'pendiente'): ?>
+                            <a href="../logica/reservas.php?accion=aceptar&id=<?= $r['id_reserva']; ?>" class="btn btn-on">Aceptar</a>
+                            <a href="../logica/reservas.php?accion=rechazar&id=<?= $r['id_reserva']; ?>" class="btn btn-off">Rechazar</a>
+                        <?php else: ?>
+                            <span class="sin-accion">—</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
 </section>
+
+<footer>
+    <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
+</footer>
+
 </body>
 </html>

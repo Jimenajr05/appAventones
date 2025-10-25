@@ -1,54 +1,139 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f4f7f8;
     margin: 0;
+    padding: 0;
 }
 
-header {
-    background-color: #0B3D2E;
+/* ====== HEADER ====== */
+.hero-header {
+    background: linear-gradient(90deg, #063125, #109686);
     color: white;
     text-align: center;
-    padding: 20px;
+    padding: 20px 0;
 }
 
-.container {
-    width: 90%;
-    max-width: 900px;
-    background: white;
-    margin: 30px auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-form label {
+.logo-hero {
+    width: 150px;
     display: block;
-    margin-top: 10px;
+    margin: 0 auto 10px;
+}
+
+.resaltado {
+    color: #ffc107;
+}
+
+/* ====== TOOLBAR ====== */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0b3d2e;
+    padding: 10px 20px;
+    color: white;
+    flex-wrap: wrap;
+}
+
+.toolbar-left .nav-link {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-weight: 500;
+}
+
+.toolbar-left .nav-link.active {
+    border-bottom: 2px solid #ffc107;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name {
     font-weight: bold;
 }
 
-form input[type="text"],
-form input[type="number"],
-form input[type="file"] {
-    width: 100%;
-    padding: 7px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.user-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
 }
 
-form input[type="submit"] {
-    margin-top: 15px;
-    background-color: #0B3D2E;
+.logout-btn {
+    background-color: #dc3545;
     color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
 }
 
-form input[type="submit"]:hover {
-    background-color: #064c38;
+.logout-btn:hover {
+    background-color: #a71d2a;
+}
+
+/* ====== CONTENEDOR ====== */
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ====== FORMULARIO ====== */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.center {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-blue {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-blue:hover {
+    background-color: #0056b3;
+}
+
+/* ====== TABLA ====== */
+.table-container {
+    overflow-x: auto;
 }
 
 table {
@@ -57,24 +142,64 @@ table {
     margin-top: 20px;
 }
 
-th,
-td {
+th, td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
 }
 
-.btn-editar {
-    color: #007bff;
+th {
+    background-color: #007bff;
+    color: white;
 }
 
-.btn-eliminar {
-    color: #dc3545;
+tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
+tr:hover {
+    background-color: #e3f2fd;
+}
+
+.status-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-on {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-on:hover {
+    background-color: #1e7e34;
+}
+
+.btn-off {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-off:hover {
+    background-color: #a71d2a;
+}
+
+/* ====== ALERTA ====== */
 .alert {
     background: #d4edda;
     color: #155724;
     padding: 10px;
     border-radius: 5px;
+    text-align: center;
+}
+
+/* ====== FOOTER ====== */
+footer {
+    text-align: center;
+    background-color: #0B3D2E;
+    color: white;
+    padding: 15px 0;
+    margin-top: 40px;
 }
