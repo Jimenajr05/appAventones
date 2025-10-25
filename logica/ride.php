@@ -44,7 +44,7 @@ class Ride {
                     WHERE id_ride=? AND id_chofer=?";
             $stmt = $this->conexion->prepare($sql);
             $stmt->bind_param(
-                "isssssdi ii",
+                "isssssdiii",
                 $data['id_vehiculo'],
                 $data['nombre'],
                 $data['inicio'],

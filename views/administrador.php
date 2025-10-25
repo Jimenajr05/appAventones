@@ -3,7 +3,7 @@ session_start();
 include("../includes/conexion.php");
 include("../logica/administrador.php");
 
-// Solo admin puede acceder
+// Solo el administrador puede ingresar
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
     header("Location: login.php");
     exit;
@@ -11,9 +11,14 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
 
 $admin = new Administrador($conexion);
 
-// Activar o desactivar usuario
+// Crear nuevo administrador
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['crearAdmin'])) {
+    $admin->procesarNuevoAdministrador($_POST, $_FILES);
+}
+
+// Cambiar estado de usuario (activar/desactivar)
 if (isset($_GET['accion']) && isset($_GET['id'])) {
-    $id = $_GET['id'];
+    $id = intval($_GET['id']);
     $accion = $_GET['accion'];
     $nuevoEstado = ($accion === 'activar') ? 'activo' : 'inactivo';
     $admin->cambiarEstado($id, $nuevoEstado);
@@ -21,70 +26,112 @@ if (isset($_GET['accion']) && isset($_GET['id'])) {
     exit;
 }
 
+// Obtener lista de usuarios
 $usuarios = $admin->obtenerUsuarios();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel del Administrador</title>
-    <link rel="stylesheet" href="../assets/Estilos/administrador.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Administrador | Aventones</title>
+    <link rel="stylesheet" href="../assets/Estilos/registro.css">
 </head>
 <body>
+
 <header>
-    <h1>Panel del Administrador</h1>
-    <p>Bienvenido, <?php echo $_SESSION['nombre']; ?> (<a href="../logica/cerrarSesion.php">Cerrar sesión</a>)</p>
+    <a href="../index.php" class="btn-volver-header">⟵ Volver al inicio</a>
+    <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" width="170">
+    <h1>Panel de <span class="resaltado">Administradores</span></h1>
+    <p>Bienvenido, <strong><?= htmlspecialchars($_SESSION['nombre']) ?></strong> |
+       <a href="../logica/cerrarSesion.php" class="logout">Cerrar sesión</a></p>
 </header>
 
 <section class="container">
-    <h2>Gestión de Usuarios</h2>
+    <h3>Usuarios registrados</h3>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Tipo</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($usuarios as $usuario): ?>
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td><?php echo $usuario['id_usuario']; ?></td>
-                    <td><?php echo $usuario['nombre'] . ' ' . $usuario['apellido']; ?></td>
-                    <td><?php echo $usuario['correo']; ?></td>
-                    <td><?php echo ucfirst($usuario['tipo']); ?></td>
-                    <td><?php echo ucfirst($usuario['estado']); ?></td>
-                    <td>
-                        <?php if ($usuario['estado'] === 'activo'): ?>
-                            <a href="?accion=desactivar&id=<?php echo $usuario['id_usuario']; ?>" class="btn btn-red">Desactivar</a>
-                        <?php else: ?>
-                            <a href="?accion=activar&id=<?php echo $usuario['id_usuario']; ?>" class="btn btn-green">Activar</a>
-                        <?php endif; ?>
-                    </td>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($usuarios as $usuario): ?>
+                    <tr>
+                        <td><?= $usuario['id_usuario']; ?></td>
+                        <td><?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido']); ?></td>
+                        <td><?= htmlspecialchars($usuario['correo']); ?></td>
+                        <td><?= ucfirst($usuario['tipo']); ?></td>
+                        <td>
+                            <span class="estado <?= $usuario['estado']; ?>">
+                                <?= ucfirst($usuario['estado']); ?>
+                            </span>
+                        </td>
+                        <td>
+                            <?php if ($usuario['estado'] === 'activo'): ?>
+                                <a href="?accion=desactivar&id=<?= $usuario['id_usuario']; ?>" class="btn btn-red">Desactivar</a>
+                            <?php else: ?>
+                                <a href="?accion=activar&id=<?= $usuario['id_usuario']; ?>" class="btn btn-green">Activar</a>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
-    <h2>Crear nuevo Administrador</h2>
-    <form action="" method="POST">
-        <input type="text" name="nombre" placeholder="Nombre" required>
-        <input type="text" name="apellido" placeholder="Apellido" required>
-        <input type="email" name="correo" placeholder="Correo" required>
-        <input type="password" name="contrasena" placeholder="Contraseña" required>
-        <input type="submit" name="crearAdmin" value="Crear Administrador">
+    <hr>
+
+    <h3>Registrar nuevo administrador</h3>
+    <form action="" method="POST" enctype="multipart/form-data">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required>
+
+        <label>Apellidos:</label>
+        <input type="text" name="apellido" required>
+
+        <label>Cédula:</label>
+        <input type="text" name="cedula" required>
+
+        <label>Fecha de nacimiento:</label>
+        <input type="date" name="fecha_nacimiento" required>
+
+        <label>Correo electrónico:</label>
+        <input type="email" name="correo" required>
+
+        <label>Teléfono:</label>
+        <input type="text" name="telefono" required>
+
+        <label>Contraseña:</label>
+        <input type="password" name="contrasena" required>
+
+        <label>Confirmar contraseña:</label>
+        <input type="password" name="confirmar_contrasena" required>
+
+        <label>Fotografía:</label>
+        <input type="file" name="fotografia" accept=".jpg,.jpeg,.png">
+
+        <input type="submit" name="crearAdmin" value="Crear Administrador" class="btn">
+
+        <?php
+        if (isset($_SESSION['mensaje'])) {
+            echo "<div class='mensaje'>" . $_SESSION['mensaje'] . "</div>";
+            unset($_SESSION['mensaje']);
+        }
+        ?>
     </form>
-
-    <?php
-    if (isset($_POST['crearAdmin'])) {
-        $admin->crearAdministrador($_POST['nombre'], $_POST['apellido'], $_POST['correo'], $_POST['contrasena']);
-        echo "<p class='msg'>Administrador creado con éxito ✅</p>";
-    }
-    ?>
 </section>
+
+<footer>
+    <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
+</footer>
+
 </body>
 </html>
