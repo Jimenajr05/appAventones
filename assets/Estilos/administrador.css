@@ -60,10 +60,11 @@ header .resaltado {
     color: #0B3D2E;
 }
 
-/* ======== CONTENEDOR PRINCIPAL ======== */
+/* ======== CONTENEDOR PRINCIPAL - CORREGIDO ======== */
 .container {
-    width: 200%;
-    max-width: 1000px;
+    /* ANTES: width: 200%; max-width: 1000px; */
+    width: auto; 
+    max-width: 1200px; /* Aumentamos el ancho para que quepa la tabla */
     margin: 40px auto;
     background: #fff;
     padding: 25px;
@@ -77,9 +78,9 @@ header .resaltado {
     margin-bottom: 20px;
 }
 
-/* ======== TABLA ======== */
+/* ======== TABLA - CORREGIDA ======== */
 .table-container {
-    overflow-x: auto;
+    overflow-x: auto; /* Permite scroll horizontal si la tabla es más grande */
 }
 
 table {
@@ -88,12 +89,14 @@ table {
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 30px;
+    table-layout: fixed; /* Asegura que las columnas respeten el ancho */
 }
 
 th, td {
     padding: 10px;
     text-align: center;
     border-bottom: 1px solid #ddd;
+    word-wrap: break-word; /* Permite que el texto largo (como el correo) se corte */
 }
 
 th {
@@ -103,6 +106,24 @@ th {
 
 tr:nth-child(even) {
     background-color: #f9f9f9;
+}
+
+/* Ajustes de ancho para las columnas problemáticas */
+table td:nth-child(2), /* Nombre */
+table th:nth-child(2) {
+    min-width: 150px;
+}
+
+table td:nth-child(3), /* Correo */
+table th:nth-child(3) {
+    min-width: 250px;
+    text-align: left;
+}
+
+table td:last-child, /* Acciones (Botones) */
+table th:last-child {
+    min-width: 150px; /* Suficiente para el botón */
+    white-space: nowrap; /* Evita que el botón se parta en varias líneas */
 }
 
 .estado.activo {
@@ -123,6 +144,7 @@ tr:nth-child(even) {
     color: white;
     font-weight: bold;
     display: inline-block;
+    cursor: pointer;
 }
 
 .btn-green { background-color: #28a745; }
@@ -138,31 +160,59 @@ tr:nth-child(even) {
     background-color: #0056b3;
 }
 
-/* ======== FORMULARIO NUEVO ADMIN ======== */
-.form-admin {
+/* ======== FORMULARIO NUEVO ADMIN - CORREGIDO ======== */
+
+/* Centrar y limitar el ancho del formulario */
+.container form {
+    /* Tu HTML no tiene la clase .form-admin, así que apuntamos a la etiqueta form */
+    max-width: 500px; 
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* El estilo de los inputs debe ser 100% del ancho del formulario centrado */
+.container form label {
+    width: 100%;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.container form input:not([type="submit"]):not([type="file"]), 
+.container form select {
+    width: 100%; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box; /* Fundamental para el cálculo de ancho */
+}
+
+/* Tu estilo original de .form-admin que no se estaba usando, lo mantenemos por si acaso */
+.form-admin { 
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
 }
 
-.form-admin input {
-    width: 60%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    transition: border-color 0.3s ease;
+/* Estilo para el botón de Submit */
+.container form input[type="submit"] {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 1rem;
 }
 
-.form-admin input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.msg {
+/* El mensaje de error/éxito */
+.mensaje {
     text-align: center;
-    color: #28a745;
-    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }
 
 /* ======== FOOTER ======== */
@@ -176,4 +226,3 @@ footer {
     font-size: 0.95rem;
     letter-spacing: 0.3px;
 }
-

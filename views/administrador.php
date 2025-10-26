@@ -35,7 +35,7 @@ $usuarios = $admin->obtenerUsuarios();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel del Administrador | Aventones</title>
-    <link rel="stylesheet" href="../assets/Estilos/registro.css">
+    <link rel="stylesheet" href="../assets/Estilos/administrador.css">
 </head>
 <body>
 
@@ -118,7 +118,7 @@ $usuarios = $admin->obtenerUsuarios();
         <label>Fotografía:</label>
         <input type="file" name="fotografia" accept=".jpg,.jpeg,.png">
 
-        <input type="submit" name="crearAdmin" value="Crear Administrador" class="btn">
+        <input type="submit" name="crearAdmin" value="Crear Administrador" class="btn btn-blue">
 
         <?php
         if (isset($_SESSION['mensaje'])) {
