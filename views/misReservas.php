@@ -31,7 +31,7 @@ $resultado = mysqli_stmt_get_result($stmt);
 <head>
     <meta charset="UTF-8">
     <title>Mis Reservas</title>
-    <link rel="stylesheet" href="../assets/Estilos/reservas.css">
+    <link rel="stylesheet" href="../assets/Estilos/buscarRides.css">
 </head>
 <body>
 
