@@ -3,9 +3,8 @@ session_start();
 include("../includes/conexion.php");
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Basic input validation / sanitization
-    $correo = isset($_POST['correo']) ? trim($_POST['correo']) : '';
-    $contrasena = isset($_POST['contrasena']) ? $_POST['contrasena'] : '';
+    $correo = trim($_POST['correo'] ?? '');
+    $contrasena = $_POST['contrasena'] ?? '';
 
     if ($correo === '' || $contrasena === '') {
         echo "<p style='color:red; text-align:center;'>❗ Completa todos los campos.</p>";
@@ -14,47 +13,66 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // Prepared statement to prevent SQL injection
-    $stmt = mysqli_prepare($conexion, "SELECT id_usuario, nombre, tipo, contrasena, estado FROM usuarios WHERE correo = ? LIMIT 1");
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, 's', $correo);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_store_result($stmt);
+    // 🔹 Ahora también obtenemos la fotografía
+    $stmt = $conexion->prepare("SELECT id_usuario, nombre, tipo, contrasena, estado, fotografia FROM usuarios WHERE correo = ? LIMIT 1");
+    $stmt->bind_param('s', $correo);
+    $stmt->execute();
+    $stmt->store_result();
 
-        if (mysqli_stmt_num_rows($stmt) === 1) {
-            mysqli_stmt_bind_result($stmt, $id_usuario, $nombre, $tipo, $hash_contrasena, $estado);
-            mysqli_stmt_fetch($stmt);
+    if ($stmt->num_rows === 1) {
+        $stmt->bind_result($id_usuario, $nombre, $tipo, $hash_contrasena, $estado, $fotografia);
+        $stmt->fetch();
 
-            // Verify password - temporary fix for admin
-            if (($tipo === 'administrador' && $contrasena === $hash_contrasena) || 
-                ($tipo !== 'administrador' && password_verify($contrasena, $hash_contrasena))) {
-                if ($estado === 'activo') {
-                    $_SESSION['id_usuario'] = $id_usuario;
-                    $_SESSION['nombre'] = $nombre;
-                    $_SESSION['tipo'] = $tipo;
+        // 🔐 Verificación de contraseña
+        $loginValido = false;
+        if ($tipo === 'administrador' && $contrasena === $hash_contrasena) {
+            $loginValido = true; // los admin pueden tener clave sin hash
+        } elseif (password_verify($contrasena, $hash_contrasena)) {
+            $loginValido = true;
+        }
 
-                    mysqli_stmt_close($stmt);
-                    include("../includes/cerrarConexion.php");
-                    header("Location: ../views/dashboard.php");
-                    exit;
-                } else {
-                    echo "<p style='color:red; text-align:center;'>⚠️ Tu cuenta está pendiente o inactiva.</p>";
-                    echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
+        if ($loginValido) {
+            if ($estado === 'activo') {
+                // ✅ Guardamos todos los datos en sesión
+                $_SESSION['id_usuario'] = $id_usuario;
+                $_SESSION['nombre'] = $nombre;
+                $_SESSION['tipo'] = $tipo;
+                $_SESSION['foto'] = $fotografia && file_exists("../" . $fotografia)
+                    ? "../" . $fotografia
+                    : "../assets/Estilos/Imagenes/default-user.png";
+
+                // 🔀 Redirección según el tipo de usuario
+                switch ($tipo) {
+                    case 'chofer':
+                        header("Location: ../views/chofer.php");
+                        break;
+                    case 'pasajero':
+                        header("Location: ../views/pasajero.php");
+                        break;
+                    case 'administrador':
+                        header("Location: ../views/administrador.php");
+                        break;
+                    default:
+                        header("Location: ../views/dashboard.php");
+                        break;
                 }
+                $stmt->close();
+                include("../includes/cerrarConexion.php");
+                exit;
             } else {
-                echo "<p style='color:red; text-align:center;'>❌ Usuario o contraseña incorrectos.</p>";
+                echo "<p style='color:red; text-align:center;'>⚠ Tu cuenta está pendiente o inactiva.</p>";
                 echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
             }
         } else {
             echo "<p style='color:red; text-align:center;'>❌ Usuario o contraseña incorrectos.</p>";
             echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
         }
-
-        mysqli_stmt_close($stmt);
     } else {
-        // Fallback error
-        echo "<p style='color:red; text-align:center;'>6A8 Error del servidor. Intenta de nuevo más tarde.</p>";
+        echo "<p style='color:red; text-align:center;'>❌ Usuario o contraseña incorrectos.</p>";
+        echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
     }
+
+    $stmt->close();
 }
 
 include("../includes/cerrarConexion.php");
