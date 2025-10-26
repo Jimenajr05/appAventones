@@ -40,25 +40,55 @@ header .resaltado {
     text-decoration: underline;
 }
 
-/* ======== BOTÓN VOLVER ======== */
-.btn-volver-header {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #fff;
-    color: #0B3D2E;
-    padding: 8px 15px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-    transition: all 0.3s ease;
+/* ======== TOOLBAR ======== */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    border-bottom: 2px solid #cbe3e7;
+    padding: 12px 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.btn-volver-header:hover {
-    background-color: #ffc107;
-    color: #0B3D2E;
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.user-name {
+    color: #0B3D2E;
+    font-weight: 600;
+}
+
+.user-photo {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    object-fit: cover;
+}
+
+.logout-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #0056b3;
+}
+
 
 /* ======== CONTENEDOR PRINCIPAL - CORREGIDO ======== */
 .container {
@@ -204,6 +234,26 @@ table th:last-child {
     font-size: 1rem;
 }
 
+/* Quitar borde y outline del botón */
+input[type="submit"],
+.btn {
+    border: none;          /* elimina el borde negro */
+    outline: none;         /* elimina el borde al enfocar */
+}
+
+/* Evitar que el outline vuelva a aparecer al hacer clic */
+input[type="submit"]:focus,
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.btn-blue:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+
 /* El mensaje de error/éxito */
 .mensaje {
     text-align: center;
@@ -219,10 +269,7 @@ table th:last-child {
 footer {
     text-align: center;
     background-color: #0B3D2E;
-    color: white;
-    padding: 20px 0;
-    margin-top: 60px;
-    border-top: 3px solid #ffc107;
-    font-size: 0.95rem;
-    letter-spacing: 0.3px;
+    color: #ffffff;
+    padding: 15px 0;
+    margin-top: 100px;
 }

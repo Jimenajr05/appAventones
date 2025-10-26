@@ -6,17 +6,18 @@ body {
 }
 
 /* ===== HEADER ===== */
-.hero-header {
-    background: linear-gradient(90deg, #063125, #109686);
+
+header {
+    background-color: #0B3D2E;
     color: white;
     text-align: center;
     padding: 20px 0;
 }
 
-.logo-hero {
-    width: 150px;
-    display: block;
-    margin: 0 auto 10px;
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
 }
 
 .resaltado {

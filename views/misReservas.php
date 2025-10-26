@@ -34,12 +34,16 @@ $resultado = mysqli_stmt_get_result($stmt);
     <link rel="stylesheet" href="../assets/Estilos/reservas.css">
 </head>
 <body>
+
 <header>
-    <h1>Mis Reservas 🎟️</h1>
+    <h1>🚗 Mis Reservas</h1>
     <nav>
-        <a href="dashboard.php">Panel</a> |
-        <a href="buscarRides.php">Buscar Rides</a> |
-        <a href="../logica/cerrarSesion.php">Cerrar Sesión</a>
+        <?php if (isset($_SESSION['tipo'])): ?>
+            <a href="../views/dashboard.php">Volver al Panel</a> |
+            <a href="../logica/cerrarSesion.php">Cerrar Sesión</a>
+        <?php else: ?>
+            <a href="../views/login.php">Iniciar Sesión</a>
+        <?php endif; ?>
     </nav>
 </header>
 

@@ -109,7 +109,7 @@ switch ($accion) {
         
         // Verificar que el ride pertenece al chofer
         if (!esRideDelChofer($conexion, $idReserva, $idUsuario)) {
-            header("Location: ../views/chofer_reservas.php?error=No autorizado");
+            header("Location: ../views/choferReservas.php?error=No autorizado");
             exit;
         }
         
@@ -119,7 +119,7 @@ switch ($accion) {
              WHERE id_reserva = ? AND estado = 'pendiente'");
         mysqli_stmt_bind_param($stmt, "i", $idReserva);
         mysqli_stmt_execute($stmt);
-        header("Location: ../views/chofer_reservas.php?msg=Reserva aceptada");
+        header("Location: ../views/choferReservas.php?msg=Reserva aceptada");
         break;
 
     // 🚫 RECHAZAR RESERVA (solo chofer)
@@ -133,7 +133,7 @@ switch ($accion) {
         
         // Verificar que el ride pertenece al chofer
         if (!esRideDelChofer($conexion, $idReserva, $idUsuario)) {
-            header("Location: ../views/chofer_reservas.php?error=No autorizado");
+            header("Location: ../views/choferReservas.php?error=No autorizado");
             exit;
         }
         
