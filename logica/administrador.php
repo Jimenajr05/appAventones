@@ -62,7 +62,7 @@ class Administrador {
 
         if ($contrasena !== $confirmar) {
             $_SESSION['mensaje'] = "❌ Las contraseñas no coinciden.";
-            header("Location: ../view/administrador.php");
+            header("Location: ../views/administrador.php");
             exit;
         }
 
@@ -85,7 +85,7 @@ class Administrador {
             $_SESSION['mensaje'] = "⚠️ Error: el correo o la cédula ya existen.";
         }
 
-        header("Location: ../view/administrador.php");
+        header("Location: ../views/administrador.php");
         exit;
     }
     
