@@ -138,6 +138,7 @@ $resultado = $stmt->get_result();
         <p>Accede con tus credenciales asignadas.</p>
         <a href="views/login.php" class="link-admin">Ir al panel administrativo</a>
     </section>
+    
 </main>
 
 <footer>

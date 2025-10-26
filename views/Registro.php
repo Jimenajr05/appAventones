@@ -65,6 +65,7 @@
 
         <p>¿Ya eres usuario? <a href="login.php">Inicia sesión aquí</a></p>
     </form>
+    
 </section>
 
 <footer>

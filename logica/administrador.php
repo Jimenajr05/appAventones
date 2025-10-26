@@ -88,5 +88,6 @@ class Administrador {
         header("Location: ../view/administrador.php");
         exit;
     }
+    
 }
 ?>
