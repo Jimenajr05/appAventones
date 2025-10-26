@@ -37,102 +37,111 @@ $usuarios = $admin->obtenerUsuarios();
     <title>Panel del Administrador | Aventones</title>
     <link rel="stylesheet" href="../assets/Estilos/administrador.css">
 </head>
-<body>
+    <body>
 
-<header>
-    <a href="../index.php" class="btn-volver-header">⟵ Volver al inicio</a>
-    <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" width="170">
-    <h1>Panel de <span class="resaltado">Administradores</span></h1>
-    <p>Bienvenido, <strong><?= htmlspecialchars($_SESSION['nombre']) ?></strong> |
-       <a href="../logica/cerrarSesion.php" class="logout">Cerrar sesión</a></p>
-</header>
+        <header>
+            <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" width="170">
+            <h1>Bienvenido a <span class="resaltado">Aventones.com</span></h1>
+            <p>Tu mejor opción para viajar seguros</p>
+        </header>
 
-<section class="container">
-    <h3>Usuarios registrados</h3>
+        <!-- ⚪ TOOLBAR -->
+        <nav class="toolbar">
+            <div class="toolbar-left">
+            </div>
+            <div class="toolbar-right">
+                <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
+                <img src="<?= htmlspecialchars($fotoUsuario); ?>" class="user-photo" alt="Usuario">
+                <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
+            </div>
+        </nav>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Tipo</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($usuarios as $usuario): ?>
-                    <tr>
-                        <td><?= $usuario['id_usuario']; ?></td>
-                        <td><?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido']); ?></td>
-                        <td><?= htmlspecialchars($usuario['correo']); ?></td>
-                        <td><?= ucfirst($usuario['tipo']); ?></td>
-                        <td>
-                            <span class="estado <?= $usuario['estado']; ?>">
-                                <?= ucfirst($usuario['estado']); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <?php if ($usuario['estado'] === 'activo'): ?>
-                                <a href="?accion=desactivar&id=<?= $usuario['id_usuario']; ?>" class="btn btn-red">Desactivar</a>
-                            <?php else: ?>
-                                <a href="?accion=activar&id=<?= $usuario['id_usuario']; ?>" class="btn btn-green">Activar</a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+        <section class="container">
+            <h3>Usuarios registrados</h3>
 
-    <hr>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($usuarios as $usuario): ?>
+                            <tr>
+                                <td><?= $usuario['id_usuario']; ?></td>
+                                <td><?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido']); ?></td>
+                                <td><?= htmlspecialchars($usuario['correo']); ?></td>
+                                <td><?= ucfirst($usuario['tipo']); ?></td>
+                                <td>
+                                    <span class="estado <?= $usuario['estado']; ?>">
+                                        <?= ucfirst($usuario['estado']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php if ($usuario['estado'] === 'activo'): ?>
+                                        <a href="?accion=desactivar&id=<?= $usuario['id_usuario']; ?>" class="btn btn-red">Desactivar</a>
+                                    <?php else: ?>
+                                        <a href="?accion=activar&id=<?= $usuario['id_usuario']; ?>" class="btn btn-green">Activar</a>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
-    <h3>Registrar nuevo administrador</h3>
-    <form action="" method="POST" enctype="multipart/form-data">
-        <label>Nombre:</label>
-        <input type="text" name="nombre" required>
+            <hr>
 
-        <label>Apellidos:</label>
-        <input type="text" name="apellido" required>
+            <h3>Registrar nuevo administrador</h3>
+            <form action="" method="POST" enctype="multipart/form-data">
+                <label>Nombre:</label>
+                <input type="text" name="nombre" required>
 
-        <label>Cédula:</label>
-        <input type="text" name="cedula" required>
+                <label>Apellidos:</label>
+                <input type="text" name="apellido" required>
 
-        <label>Fecha de nacimiento:</label>
-        <input type="date" name="fecha_nacimiento" required>
+                <label>Cédula:</label>
+                <input type="text" name="cedula" required>
 
-        <label>Correo electrónico:</label>
-        <input type="email" name="correo" required>
+                <label>Fecha de nacimiento:</label>
+                <input type="date" name="fecha_nacimiento" required>
 
-        <label>Teléfono:</label>
-        <input type="text" name="telefono" required>
+                <label>Correo electrónico:</label>
+                <input type="email" name="correo" required>
 
-        <label>Contraseña:</label>
-        <input type="password" name="contrasena" required>
+                <label>Teléfono:</label>
+                <input type="text" name="telefono" required>
 
-        <label>Confirmar contraseña:</label>
-        <input type="password" name="confirmar_contrasena" required>
+                <label>Contraseña:</label>
+                <input type="password" name="contrasena" required>
 
-        <label>Fotografía:</label>
-        <input type="file" name="fotografia" accept=".jpg,.jpeg,.png">
+                <label>Confirmar contraseña:</label>
+                <input type="password" name="confirmar_contrasena" required>
 
-        <input type="submit" name="crearAdmin" value="Crear Administrador" class="btn btn-blue">
+                <label>Fotografía:</label>
+                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png">
 
-        <?php
-        if (isset($_SESSION['mensaje'])) {
-            echo "<div class='mensaje'>" . $_SESSION['mensaje'] . "</div>";
-            unset($_SESSION['mensaje']);
-            
-        }
-        ?>
-    </form>
-</section>
+                <input type="submit" name="crearAdmin" value="Crear Administrador" class="btn btn-blue">
 
-<footer>
-    <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
-</footer>
+                <?php
+                if (isset($_SESSION['mensaje'])) {
+                    echo "<div class='mensaje'>" . $_SESSION['mensaje'] . "</div>";
+                    unset($_SESSION['mensaje']);
+                    
+                }
+                ?>
+            </form>
+        </section>
 
-</body>
+        <footer>
+            <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
+        </footer>
+
+    </body>
 </html>
