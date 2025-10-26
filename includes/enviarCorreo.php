@@ -64,5 +64,6 @@ function enviarCorreoActivacion($correoDestino, $nombre, $token) {
         error_log("Error enviando correo: {$mail->ErrorInfo}");
         return false;
     }
+    
 }
 ?>
