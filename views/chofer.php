@@ -1,7 +1,7 @@
 <?php
 session_start();
 include("../includes/conexion.php");
-include("../logica/ride.php");
+include("../logica/rides.php");
 
 // Seguridad: solo chofer
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
@@ -10,31 +10,36 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
 }
 
 $ride = new Ride($conexion);
-$idChofer = $_SESSION['id_usuario'];
+$idChofer = (int)$_SESSION['id_usuario'];
 
 // Eliminar ride
 if (isset($_GET['eliminar'])) {
-    $ride->eliminarRide($_GET['eliminar'], $idChofer);
+    $ride->eliminarRide((int)$_GET['eliminar'], $idChofer);
     header("Location: chofer.php");
     exit;
 }
 
 // Guardar (crear o editar)
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $ride->guardarRide($_POST, $idChofer);
-    header("Location: chofer.php");
-    exit;
+    try {
+        // valida: año ≥ 2010, espacios ≤ 5 y ≤ capacidad, reglas de costo, etc.
+        $ride->guardarRide($_POST, $idChofer);
+        header("Location: chofer.php");
+        exit;
+    } catch (Exception $e) {
+        $errorMsg = $e->getMessage();
+    }
 }
 
 // Editar
 $editar = null;
 if (isset($_GET['editar'])) {
-    $editar = $ride->obtenerRide($_GET['editar'], $idChofer);
+    $editar = $ride->obtenerRide((int)$_GET['editar'], $idChofer);
 }
 
-// Obtener todos los rides y vehículos
+// Listas
 $rides = $ride->obtenerRides($idChofer);
-$vehiculos = $ride->obtenerVehiculos($idChofer);
+$vehiculos = $ride->obtenerVehiculos($idChofer); // debe traer capacidad y anno
 $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
 ?>
 <!DOCTYPE html>
@@ -61,7 +66,7 @@ $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png
         <a href="choferReservas.php" class="nav-link">Reservas</a>
     </div>
     <div class="toolbar-right">
-        <span class="user-name"><?= htmlspecialchars($_SESSION['nombre']); ?></span>
+        <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
         <img src="<?= htmlspecialchars($fotoUsuario); ?>" alt="Usuario" class="user-photo">
         <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
     </div>
@@ -69,46 +74,67 @@ $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png
 
 <section class="container">
     <h2><?= $editar ? "Editar Ride" : "Nuevo Ride"; ?></h2>
-    <form method="POST" class="formulario">
+
+    <?php if (!empty($errorMsg)): ?>
+        <p class="alert" style="color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:.75rem;border-radius:.5rem;">
+            <?= htmlspecialchars($errorMsg) ?>
+        </p>
+    <?php endif; ?>
+
+    <form method="POST" class="formulario" id="formRide">
         <?php if ($editar): ?>
-            <input type="hidden" name="id_ride" value="<?= $editar['id_ride']; ?>">
+            <input type="hidden" name="id_ride" value="<?= (int)$editar['id_ride']; ?>">
         <?php endif; ?>
 
         <div class="form-grid">
             <div><label>Nombre:</label>
-                <input type="text" name="nombre" value="<?= $editar['nombre'] ?? ''; ?>" required></div>
+                <input type="text" name="nombre" value="<?= htmlspecialchars($editar['nombre'] ?? ''); ?>" required></div>
+
             <div><label>Inicio:</label>
-                <input type="text" name="inicio" value="<?= $editar['inicio'] ?? ''; ?>" required></div>
+                <input type="text" name="inicio" value="<?= htmlspecialchars($editar['inicio'] ?? ''); ?>" required></div>
+
             <div><label>Destino:</label>
-                <input type="text" name="fin" value="<?= $editar['fin'] ?? ''; ?>" required></div>
+                <input type="text" name="fin" value="<?= htmlspecialchars($editar['fin'] ?? ''); ?>" required></div>
+
             <div><label>Hora:</label>
-                <input type="time" name="hora" value="<?= $editar['hora'] ?? ''; ?>" required></div>
+                <input type="time" name="hora" value="<?= htmlspecialchars($editar['hora'] ?? ''); ?>" required></div>
+
             <div><label>Día:</label>
                 <select name="dia" required>
                     <?php
                     $dias = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
                     foreach ($dias as $d) {
-                        $sel = ($editar && $editar['dia'] == $d) ? 'selected' : '';
-                        echo "<option value='$d' $sel>$d</option>";
+                        $sel = ($editar && $editar['dia'] === $d) ? 'selected' : '';
+                        echo "<option value=\"".htmlspecialchars($d)."\" $sel>".htmlspecialchars($d)."</option>";
                     }
                     ?>
                 </select>
             </div>
+
             <div><label>Vehículo:</label>
                 <select name="id_vehiculo" required>
                     <option value="">Seleccione...</option>
                     <?php foreach ($vehiculos as $v): ?>
-                        <option value="<?= $v['id_vehiculo']; ?>"
-                            <?= ($editar && $editar['id_vehiculo'] == $v['id_vehiculo']) ? 'selected' : ''; ?>>
-                            <?= $v['marca'] . " " . $v['modelo'] . " (" . $v['placa'] . ")"; ?>
+                        <option
+                            value="<?= (int)$v['id_vehiculo']; ?>"
+                            <?= ($editar && (int)$editar['id_vehiculo'] === (int)$v['id_vehiculo']) ? 'selected' : ''; ?>>
+                            <?= htmlspecialchars(
+                                $v['marca']." ".$v['modelo']." (".$v['placa'].") — cap: ".(int)$v['capacidad'].", año: ".(int)$v['anno']
+                            ); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
+
             <div><label>Costo (₡):</label>
-                <input type="number" step="0.01" name="costo" value="<?= $editar['costo'] ?? ''; ?>" required></div>
+                <input type="number" step="0.01" min="0" name="costo"
+                       value="<?= htmlspecialchars($editar['costo'] ?? ''); ?>" required>
+            </div>
+
             <div><label>Espacios:</label>
-                <input type="number" name="espacios" value="<?= $editar['espacios'] ?? ''; ?>" required></div>
+                <input type="number" name="espacios" min="1" max="5"
+                       value="<?= htmlspecialchars($editar['espacios'] ?? ''); ?>" required>
+            </div>
         </div>
 
         <div class="center">
@@ -141,11 +167,11 @@ $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png
                         <td><?= htmlspecialchars($r['hora']); ?></td>
                         <td><?= htmlspecialchars($r['dia']); ?></td>
                         <td><?= htmlspecialchars($r['marca']." ".$r['modelo']); ?></td>
-                        <td>₡<?= number_format($r['costo'], 2); ?></td>
-                        <td><?= htmlspecialchars($r['espacios']); ?></td>
+                        <td>₡<?= number_format((float)$r['costo'], 2); ?></td>
+                        <td><?= (int)$r['espacios']; ?></td>
                         <td>
-                            <a href="?editar=<?= $r['id_ride']; ?>" class="btn status-btn btn-on">✏️ Editar</a>
-                            <a href="?eliminar=<?= $r['id_ride']; ?>" class="btn status-btn btn-off"
+                            <a href="?editar=<?= (int)$r['id_ride']; ?>" class="btn status-btn btn-on">✏️ Editar</a>
+                            <a href="?eliminar=<?= (int)$r['id_ride']; ?>" class="btn status-btn btn-off"
                                onclick="return confirm('¿Eliminar este ride?');">🗑️ Eliminar</a>
                         </td>
                     </tr>

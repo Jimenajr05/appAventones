@@ -168,11 +168,20 @@ p a:hover {
 
 /* ======== FOOTER ======== */
 footer {
-    text-align: center;
-    background-color: #0B3D2E;
-    color: #ffffff;
-    padding: 15px 0;
-    margin-top: 40px;
+  text-align: center;
+  background: linear-gradient(90deg, #063125, #109686);
+  color: white;
+  padding: 20px 0;
+  font-size: 0.9rem;
+  margin-top: 100px;
+  border-top: 3px solid #054733;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+}
+
+footer p {
+  margin: 0;
+  letter-spacing: 0.3px;
+  opacity: 0.95;
 }
 
 /* ======== RESPONSIVE ======== */

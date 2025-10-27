@@ -1,241 +1,308 @@
-/* ======== ENCABEZADO VERDE ======== */
-.hero-header {
-    background: linear-gradient(90deg, #063125, #109686);
-    color: white;
-    text-align: center;
-    padding: 25px 0;
-    position: relative;
-}
-
-.logo-hero {
-    width: 170px;
-    display: block;
-    margin: 0 auto 10px;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
-}
-
-.hero-header h1 {
-    font-size: 1.8rem;
-    margin: 0;
-}
-
-.hero-header h2 {
-    font-weight: 400;
-    margin-top: 5px;
-    font-size: 1.1rem;
-}
-
-.resaltado {
-    color: #ffc107;
-}
-
-/* ======== TOOLBAR ======== */
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #ffffff;
-    border-bottom: 2px solid #cbe3e7;
-    padding: 12px 40px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-.brand {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #0B3D2E;
-}
-
-.nav-link {
-    color: #0B3D2E;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-    color: #007bff;
-}
-
-.nav-link.active {
-    color: #007bff;
-    font-weight: bold;
-}
-
-.toolbar-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-name {
-    color: #0B3D2E;
-    font-weight: 600;
-}
-
-.user-photo {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 2px solid #007bff;
-    object-fit: cover;
-}
-
-.logout-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-    background-color: #0056b3;
-}
-
-/* ======== CONTENIDO ======== */
-.container {
-    width: 90%;
-    max-width: 1100px;
-    margin: 40px auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-}
-
-.container h2 {
-    text-align: center;
-    color: #0B3D2E;
-}
-
-/* ======== FORMULARIO ======== */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 15px 20px;
-}
-
-label {
-    font-weight: 600;
-    color: #333;
-}
-
-input,
-select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s;
-}
-
-input:focus,
-select:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.center {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.btn {
-    display: inline-block;
-    padding: 10px 16px;
-    border-radius: 25px;
-    font-weight: 600;
-    color: white;
-    text-transform: uppercase;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-/* ======== BOTONES ======== */
-.btn-blue {
-    background-color: #007bff;
-}
-
-.btn-blue:hover {
-    background-color: #0056b3;
-}
-
-.btn-on {
-    background-color: #28a745;
-}
-
-.btn-on:hover {
-    background-color: #218838;
-}
-
-.btn-off {
-    background-color: #e53935;
-}
-
-.btn-off:hover {
-    background-color: #c62828;
-}
-
-/* ======== TABLA ======== */
-.table-container {
-    margin-top: 30px;
-    border-radius: 10px;
-    overflow-x: auto;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-}
-
-thead {
-    background: linear-gradient(90deg, #0B3D2E, #00796b);
-    color: #fff;
-}
-
-th,
-td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-tr:hover td {
-    background-color: #eaf4f1;
-}
-
-/* ======== FOOTER ======== */
-footer {
-    text-align: center;
-    background-color: #0B3D2E;
-    color: #ffffff;
-    padding: 15px 0;
-    margin-top: 100px;
-}
-
-/* ======== RESETEO GLOBAL ======== */
+/* ============================================================
+   ESTILOS GENERALES
+============================================================ */
 html,
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #f4f7f8;
-    box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f4f7f8;
+  margin: 0;
+  padding: 0;
 }
 
 *,
 *::before,
 *::after {
-    box-sizing: inherit;
+  box-sizing: inherit;
+}
+
+/* ============================================================
+   ENCABEZADO VERDE (Unificado con Aventones)
+============================================================ */
+.hero-header {
+  background: linear-gradient(90deg, #063125, #109686);
+  color: #fff;
+  text-align: center;
+  padding: 25px 0 30px;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.logo-hero {
+  width: 170px;
+  /* 🔹 tamaño uniforme */
+  display: block;
+  margin: 0 auto 10px;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+}
+
+.hero-header h1 {
+  font-size: 1.8rem;
+  margin: 5px 0;
+  font-weight: 600;
+}
+
+.hero-header h2 {
+  font-weight: 400;
+  margin-top: 5px;
+  font-size: 1.1rem;
+  color: #e3f2f1;
+}
+
+.resaltado {
+  color: #ffc107;
+}
+
+/* ============================================================
+   TOOLBAR
+============================================================ */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom: 2px solid #cbe3e7;
+  padding: 12px 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #0b3d2e;
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  color: #0b3d2e;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #007bff;
+}
+
+.nav-link.active {
+  color: #034609;
+  font-weight: bold;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-name {
+  color: #0b3d2e;
+  font-weight: 600;
+}
+
+.user-photo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #007bff;
+  object-fit: cover;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================
+   BOTÓN SALIR
+============================================================ */
+.logout-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ============================================================
+   CONTENIDO PRINCIPAL
+============================================================ */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.container h2 {
+  text-align: center;
+  color: #0b3d2e;
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   FORMULARIO
+============================================================ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 35px;
+}
+
+label {
+  font-weight: 600;
+  color: #0b3d2e;
+  display: block;
+  margin-bottom: 6px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.center {
+  text-align: center;
+  margin-top: 25px;
+}
+
+/* ============================================================
+   BOTONES
+============================================================ */
+.btn {
+  width: auto;
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-blue {
+  background-color: #007bff;
+}
+
+.btn-blue:hover {
+  background-color: #0056b3;
+}
+
+.btn-on {
+  background-color: #28a745;
+}
+
+.btn-on:hover {
+  background-color: #1e7e34;
+}
+
+.btn-off {
+  background-color: #dc3545;
+}
+
+.btn-off:hover {
+  background-color: #a71d2a;
+}
+
+/* ============================================================
+   TABLA
+============================================================ */
+.table-container {
+  margin-top: 30px;
+  border-radius: 10px;
+  overflow-x: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+thead {
+  background: linear-gradient(90deg, #063125, #109686);
+  color: white;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover td {
+  background-color: #eaf4f1;
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer {
+  text-align: center;
+  background: linear-gradient(90deg, #063125, #109686);
+  color: white;
+  padding: 20px 0;
+  font-size: 0.9rem;
+  margin-top: 80px;
+  border-top: 3px solid #054733;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+}
+
+footer p {
+  margin: 0;
+  letter-spacing: 0.3px;
+  opacity: 0.95;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 600px) {
+  .hero-header {
+    padding: 20px 0;
+  }
+
+  .logo-hero {
+    width: 140px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+    padding: 25px 15px;
+  }
 }

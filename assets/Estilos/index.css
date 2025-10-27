@@ -18,6 +18,17 @@ header img {
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
+header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+header h2 {
+    font-weight: 400;
+    margin-top: 5px;
+    font-size: 1.1rem;
+}
+
 .marca {
     color: #ffc107;
 }
@@ -92,33 +103,37 @@ header img {
 .btn-secundario:hover {
     background-color: #1e7e34;
 }
-
 .table-container {
-    overflow-x: auto;
+  margin-top: 30px;
+  border-radius: 10px;
+  overflow-x: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    border-radius: 8px;
-    overflow: hidden;
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+thead {
+  background: linear-gradient(90deg, #063125, #109686);
+  color: white;
 }
 
 th,
 td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-}
-
-th {
-    background-color: #007bff;
-    color: white;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 tr:nth-child(even) {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
+}
+
+tr:hover td {
+  background-color: #eaf4f1;
 }
 
 .no-resultados {
@@ -147,9 +162,18 @@ tr:nth-child(even) {
 }
 
 footer {
-    text-align: center;
-    background-color: #0B3D2E;
-    color: white;
-    padding: 15px 0;
-    margin-top: 40px;
+  text-align: center;
+  background: linear-gradient(90deg, #063125, #109686);
+  color: #fff;
+  padding: 18px 0;
+  font-size: 0.9rem;
+  margin-top: 66px; /* 🔹 más ajustado */
+  border-top: 2px solid #054733;
+  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.15);
+}
+
+footer p {
+  margin: 0;
+  letter-spacing: 0.4px;
+  opacity: 0.9;
 }

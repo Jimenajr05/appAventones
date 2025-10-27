@@ -46,7 +46,7 @@ class Administrador {
                 ('$nombre', '$apellido', '$cedula', '$fecha_nacimiento', '$correo', '$telefono', '$fotografia', '$contrasenaHash', 'administrador', 'activo')";
         return mysqli_query($this->conexion, $sql);
     }
-
+    
     // 📦 Procesar formulario del nuevo administrador
     public function procesarNuevoAdministrador($post, $files) {
         session_start();
@@ -66,21 +66,48 @@ class Administrador {
             exit;
         }
 
-        // 📸 Manejo de fotografía
-        $rutaFoto = null;
+        // =============================
+        // 📸 Manejo de fotografía (igual al registro común)
+        // =============================
+        $rutaFoto = "";
         if (isset($files['fotografia']) && $files['fotografia']['error'] === 0) {
-            $directorio = "../assets/imagenesUsuarios/";
-            if (!is_dir($directorio)) mkdir($directorio, 0777, true);
-            $nombreArchivo = time() . "_" . basename($files['fotografia']['name']);
-            $rutaDestino = $directorio . $nombreArchivo;
+            $ext = strtolower(pathinfo($files['fotografia']['name'], PATHINFO_EXTENSION));
+
+            if (!in_array($ext, ['jpg', 'jpeg', 'png'])) {
+                $_SESSION['mensaje'] = "❌ Solo se permiten imágenes JPG o PNG.";
+                header("Location: ../views/administrador.php");
+                exit;
+            }
+
+            if ($files['fotografia']['size'] > 2 * 1024 * 1024) {
+                $_SESSION['mensaje'] = "❌ La imagen no debe superar los 2 MB.";
+                header("Location: ../views/administrador.php");
+                exit;
+            }
+
+            // 📁 Carpeta igual que el registro común
+            $directorio = "../uploads/usuarios/";
+            if (!is_dir($directorio)) {
+                mkdir($directorio, 0777, true);
+            }
+
+            $nuevoNombre = uniqid("user_") . ".$ext";
+            $rutaDestino = $directorio . $nuevoNombre;
+
             if (move_uploaded_file($files['fotografia']['tmp_name'], $rutaDestino)) {
-                $rutaFoto = "assets/imagenesUsuarios/" . $nombreArchivo;
+                $rutaFoto = "uploads/usuarios/" . $nuevoNombre;
+            } else {
+                $_SESSION['mensaje'] = "❌ Error al subir la imagen.";
+                header("Location: ../views/administrador.php");
+                exit;
             }
         }
 
-        // Crear en base de datos
+        // =============================
+        // 💾 Crear en base de datos
+        // =============================
         if ($this->crearAdministrador($nombre, $apellido, $cedula, $fecha_nacimiento, $correo, $telefono, $contrasena, $rutaFoto)) {
-            $_SESSION['mensaje'] = "✅ Administrador creado correctamente (contraseña encriptada).";
+            $_SESSION['mensaje'] = "✅ Administrador creado correctamente.";
         } else {
             $_SESSION['mensaje'] = "⚠️ Error: el correo o la cédula ya existen.";
         }

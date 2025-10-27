@@ -30,7 +30,7 @@ $reservas = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Reservas | Aventones</title>
-    <link rel="stylesheet" href="../assets/Estilos/reservas.css">
+    <link rel="stylesheet" href="../assets/Estilos/choferReservas.css">
 </head>
 <body>
 
@@ -49,7 +49,7 @@ $reservas = $stmt->get_result();
         <a href="choferReservas.php" class="nav-link active">Reservas</a>
     </div>
     <div class="toolbar-right">
-        <span class="user-name"><?= htmlspecialchars($_SESSION['nombre']); ?></span>
+        <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
         <img src="<?= htmlspecialchars($fotoUsuario); ?>" alt="Usuario" class="user-photo">
         <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
     </div>

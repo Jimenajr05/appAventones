@@ -52,7 +52,7 @@ if (isset($_GET['accion']) && $_GET['accion'] === 'editar' && isset($_GET['id'])
         <a href="choferReservas.php" class="nav-link">Reservas</a>
     </div>
     <div class="toolbar-right">
-        <span class="user-name"><?= htmlspecialchars($_SESSION['nombre']); ?></span>
+        <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
         <img src="<?= htmlspecialchars($fotoUsuario); ?>" alt="Usuario" class="user-photo">
         <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
     </div>
@@ -71,25 +71,66 @@ if (isset($_GET['accion']) && $_GET['accion'] === 'editar' && isset($_GET['id'])
             <input type="hidden" name="id_vehiculo" value="<?= $vehiculoEdit['id_vehiculo']; ?>">
         <?php endif; ?>
 
+        <?php
+        $opcionesColor = [
+            "Blanco","Negro","Gris","Plata","Azul","Rojo","Verde",
+            "Amarillo","Naranja","Café","Beige","Vino","Turquesa","Morado"
+        ];
+        $colorActual = $vehiculoEdit['color'] ?? '';
+        ?>
+
         <div class="form-grid">
-            <div><label>Marca:</label>
-                <input type="text" name="marca" required value="<?= $vehiculoEdit['marca'] ?? ''; ?>"></div>
-            <div><label>Modelo:</label>
-                <input type="text" name="modelo" required value="<?= $vehiculoEdit['modelo'] ?? ''; ?>"></div>
-            <div><label>Placa:</label>
-                <input type="text" name="placa" required value="<?= $vehiculoEdit['placa'] ?? ''; ?>"></div>
-            <div><label>Color:</label>
-                <input type="text" name="color" value="<?= $vehiculoEdit['color'] ?? ''; ?>"></div>
-            <div><label>Año:</label>
-                <input type="number" name="anno" value="<?= $vehiculoEdit['anno'] ?? ''; ?>"></div>
-            <div><label>Capacidad:</label>
-                <input type="number" name="capacidad" required value="<?= $vehiculoEdit['capacidad'] ?? ''; ?>"></div>
-            <div><label>Fotografía:</label>
-                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png"></div>
+            <div>
+                <label>Marca:</label>
+                <input type="text" name="marca" required value="<?= $vehiculoEdit['marca'] ?? ''; ?>">
+            </div>
+
+            <div>
+                <label>Modelo:</label>
+                <input type="text" name="modelo" required value="<?= $vehiculoEdit['modelo'] ?? ''; ?>">
+            </div>
+
+            <div>
+                <label>Placa:</label>
+                <input type="text" name="placa" required value="<?= $vehiculoEdit['placa'] ?? ''; ?>">
+            </div>
+
+            <div>
+                <label>Color:</label>
+                <select name="color" required>
+                    <option value="">Seleccione...</option>
+                    <?php foreach ($opcionesColor as $opt): ?>
+                        <option value="<?= $opt ?>" <?= ($opt === $colorActual ? 'selected' : '') ?>>
+                            <?= $opt ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div>
+                <label>Año:</label>
+                <input type="number" name="anno" min="2010" max="<?= date('Y') ?>"
+                       value="<?= htmlspecialchars($vehiculoEdit['anno'] ?? '') ?>" required>
+                <small>Solo modelos 2010 o más nuevos.</small>
+            </div>
+
+            <div>
+                <label>Capacidad:</label>
+                <input type="number" name="capacidad" min="1" max="5"
+                       value="<?= htmlspecialchars($vehiculoEdit['capacidad'] ?? '') ?>" required>
+                <small>Máximo 5 asientos.</small>
+            </div>
+
+            <div>
+                <label>Fotografía:</label>
+                <input type="file" name="fotografia" accept=".jpg,.jpeg,.png">
+            </div>
         </div>
 
         <div class="center">
-            <input type="submit" value="<?= $vehiculoEdit ? 'Actualizar Vehículo' : 'Guardar Vehículo'; ?>" class="btn btn-blue">
+            <input type="submit"
+                   value="<?= $vehiculoEdit ? 'Actualizar Vehículo' : 'Guardar Vehículo'; ?>"
+                   class="btn btn-blue">
         </div>
     </form>
 

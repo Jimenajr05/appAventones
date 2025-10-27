@@ -1,7 +1,7 @@
 <?php
 session_start();
 include("../includes/conexion.php");
-include("../logica/ride.php");
+include("../logica/rides.php");
 
 // Verificar acceso
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
@@ -10,31 +10,35 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
 }
 
 $rideObj = new Ride($conexion);
-$idChofer = $_SESSION['id_usuario'];
+$idChofer = (int)$_SESSION['id_usuario'];
 
 // ✅ Eliminar
 if (isset($_GET['eliminar'])) {
-    $rideObj->eliminarRide($_GET['eliminar'], $idChofer);
+    $rideObj->eliminarRide((int)$_GET['eliminar'], $idChofer);
     header("Location: rides.php");
     exit;
 }
 
 // ✅ Guardar (crear o editar)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $rideObj->guardarRide($_POST, $idChofer);
-    header("Location: rides.php");
-    exit;
+    try {
+        $rideObj->guardarRide($_POST, $idChofer); // valida año ≥ 2010, espacios ≤ 5 y ≤ capacidad, reglas de costo
+        header("Location: rides.php");
+        exit;
+    } catch (Exception $e) {
+        $errorMsg = $e->getMessage();
+    }
 }
 
 // ✅ Editar
 $rideEditar = null;
 if (isset($_GET['editar'])) {
-    $rideEditar = $rideObj->obtenerRide($_GET['editar'], $idChofer);
+    $rideEditar = $rideObj->obtenerRide((int)$_GET['editar'], $idChofer);
 }
 
-// ✅ Obtener lista de rides y vehículos
+// ✅ Listas
 $rides = $rideObj->obtenerRides($idChofer);
-$vehiculos = $rideObj->obtenerVehiculos($idChofer);
+$vehiculos = $rideObj->obtenerVehiculos($idChofer); // debe traer capacidad y anno
 $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
 ?>
 <!DOCTYPE html>
@@ -55,7 +59,7 @@ $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png
         <a href="perfil.php" class="link">Configuración</a>
     </div>
     <div class="right">
-        <span class="user-welcome">Bienvenido, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
+        <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
         <img src="<?= htmlspecialchars($fotoUsuario); ?>" class="user-photo" alt="Usuario">
         <a href="../logica/cerrarSesion.php" class="logout-link">Salir</a>
     </div>
@@ -64,53 +68,83 @@ $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png
 <section class="container">
     <h2><?= $rideEditar ? "Editar Ride" : "Registrar Ride"; ?></h2>
 
-    <form method="POST" class="formulario">
+    <?php if (!empty($errorMsg)): ?>
+        <p class="alert" style="color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:.75rem;border-radius:.5rem;">
+            <?= htmlspecialchars($errorMsg) ?>
+        </p>
+    <?php endif; ?>
+
+    <form method="POST" class="formulario" id="formRide">
         <?php if ($rideEditar): ?>
-            <input type="hidden" name="id_ride" value="<?= $rideEditar['id_ride']; ?>">
+            <input type="hidden" name="id_ride" value="<?= (int)$rideEditar['id_ride']; ?>">
         <?php endif; ?>
 
         <div class="form-grid">
-            <div><label>Nombre:</label>
-                <input type="text" name="nombre" value="<?= $rideEditar['nombre'] ?? ''; ?>" required></div>
+            <div>
+                <label>Nombre:</label>
+                <input type="text" name="nombre" value="<?= htmlspecialchars($rideEditar['nombre'] ?? ''); ?>" required>
+            </div>
 
-            <div><label>Inicio:</label>
-                <input type="text" name="inicio" value="<?= $rideEditar['inicio'] ?? ''; ?>" required></div>
+            <div>
+                <label>Inicio:</label>
+                <input type="text" name="inicio" value="<?= htmlspecialchars($rideEditar['inicio'] ?? ''); ?>" required>
+            </div>
 
-            <div><label>Destino:</label>
-                <input type="text" name="fin" value="<?= $rideEditar['fin'] ?? ''; ?>" required></div>
+            <div>
+                <label>Destino:</label>
+                <input type="text" name="fin" value="<?= htmlspecialchars($rideEditar['fin'] ?? ''); ?>" required>
+            </div>
 
-            <div><label>Hora:</label>
-                <input type="time" name="hora" value="<?= $rideEditar['hora'] ?? ''; ?>" required></div>
+            <div>
+                <label>Hora:</label>
+                <input type="time" name="hora" value="<?= htmlspecialchars($rideEditar['hora'] ?? ''); ?>" required>
+            </div>
 
-            <div><label>Día:</label>
+            <div>
+                <label>Día:</label>
                 <select name="dia" required>
                     <?php
                     $dias = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
                     foreach ($dias as $d) {
-                        $sel = ($rideEditar && $rideEditar['dia'] == $d) ? 'selected' : '';
-                        echo "<option value='$d' $sel>$d</option>";
+                        $sel = ($rideEditar && $rideEditar['dia'] === $d) ? 'selected' : '';
+                        echo "<option value=\"".htmlspecialchars($d)."\" $sel>".htmlspecialchars($d)."</option>";
                     }
                     ?>
                 </select>
             </div>
 
-            <div><label>Vehículo:</label>
+            <div>
+                <label>Vehículo:</label>
                 <select name="id_vehiculo" required>
                     <option value="">Seleccione...</option>
                     <?php foreach ($vehiculos as $v): ?>
-                        <option value="<?= $v['id_vehiculo']; ?>"
-                            <?= ($rideEditar && $rideEditar['id_vehiculo'] == $v['id_vehiculo']) ? 'selected' : ''; ?>>
-                            <?= $v['marca'] . " " . $v['modelo'] . " (" . $v['placa'] . ")"; ?>
+                        <option
+                            value="<?= (int)$v['id_vehiculo']; ?>"
+                            <?= ($rideEditar && (int)$rideEditar['id_vehiculo'] === (int)$v['id_vehiculo']) ? 'selected' : ''; ?>
+                        >
+                            <?= htmlspecialchars(
+                                $v['marca'] . " " . $v['modelo'] . " (" . $v['placa'] . ") — cap: " .
+                                (int)$v['capacidad'] . ", año: " . (int)$v['anno']
+                            ); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <small>El sistema impide guardar si los espacios superan la capacidad o si el vehículo es < 2010.</small>
             </div>
 
-            <div><label>Costo (₡):</label>
-                <input type="number" name="costo" step="0.01" value="<?= $rideEditar['costo'] ?? ''; ?>" required></div>
+            <div>
+                <label>Costo (₡):</label>
+                <input type="number" name="costo" step="0.01" min="0"
+                       value="<?= htmlspecialchars($rideEditar['costo'] ?? ''); ?>" required>
+                <small>Mínimos: ₡500 base, ₡700 fin de semana, ₡800 nocturno (22:00–05:59). Máx: ₡10 000.</small>
+            </div>
 
-            <div><label>Espacios:</label>
-                <input type="number" name="espacios" value="<?= $rideEditar['espacios'] ?? ''; ?>" required></div>
+            <div>
+                <label>Espacios:</label>
+                <input type="number" name="espacios" min="1" max="5"
+                       value="<?= htmlspecialchars($rideEditar['espacios'] ?? ''); ?>" required>
+                <small>Máximo 5; si supera la capacidad del vehículo, no se guardará.</small>
+            </div>
         </div>
 
         <div class="center">
@@ -143,11 +177,11 @@ $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png
                     <td><?= htmlspecialchars($r['hora']); ?></td>
                     <td><?= htmlspecialchars($r['dia']); ?></td>
                     <td><?= htmlspecialchars($r['marca']." ".$r['modelo']); ?></td>
-                    <td>₡<?= number_format($r['costo'], 2); ?></td>
-                    <td><?= htmlspecialchars($r['espacios']); ?></td>
+                    <td>₡<?= number_format((float)$r['costo'], 2); ?></td>
+                    <td><?= (int)$r['espacios']; ?></td>
                     <td>
-                        <a href="?editar=<?= $r['id_ride']; ?>" class="btn status-btn btn-on">✏️ Editar</a>
-                        <a href="?eliminar=<?= $r['id_ride']; ?>" class="btn status-btn btn-off"
+                        <a href="?editar=<?= (int)$r['id_ride']; ?>" class="btn status-btn btn-on">✏️ Editar</a>
+                        <a href="?eliminar=<?= (int)$r['id_ride']; ?>" class="btn status-btn btn-off"
                            onclick="return confirm('¿Eliminar este ride?')">🗑️ Eliminar</a>
                     </td>
                 </tr>
