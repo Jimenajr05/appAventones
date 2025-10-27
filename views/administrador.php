@@ -28,7 +28,14 @@ if (isset($_GET['accion']) && isset($_GET['id'])) {
 
 // Obtener lista de usuarios
 $usuarios = $admin->obtenerUsuarios();
+
+// ✅ Obtener la foto del administrador logueado
+$fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
+if (!file_exists($fotoUsuario) && file_exists("../" . $fotoUsuario)) {
+    $fotoUsuario = "../" . $fotoUsuario;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

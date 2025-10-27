@@ -86,7 +86,8 @@ $resultado = $stmt->get_result();
 
             <div class="acciones-form">
                 <button type="submit" class="btn">Buscar</button>
-                <a href="index.php" class="btn btn-secundario">Limpiar</a>
+                <button type="button" class="btn btn-secundario" onclick="window.location.href='index.php'">Limpiar</button>
+
             </div>
         </form>
 

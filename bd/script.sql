@@ -75,3 +75,66 @@ INSERT INTO usuarios (
 ) VALUES (
     'Admin', 'Principal', '0001', '1990-01-01', 'admin@aventones.com', '88888888', 'Admin123', 'administrador', 'activo'
 );
+
+-- Vehículos fuera de rango
+SELECT * FROM vehiculos
+WHERE capacidad NOT BETWEEN 1 AND 5 OR capacidad IS NULL
+   OR anno < 2010 OR anno IS NULL;
+
+-- Rides fuera de rango (espacios/costo)
+SELECT * FROM rides
+WHERE espacios NOT BETWEEN 1 AND 5 OR espacios IS NULL
+   OR costo < 0 OR costo IS NULL;
+
+-- Rides con espacios mayores que la capacidad del vehículo
+SELECT r.*
+FROM rides r
+JOIN vehiculos v ON v.id_vehiculo = r.id_vehiculo
+WHERE r.espacios > v.capacidad;
+
+
+-- Arreglar vehiculos: capacidad (1..5) y anno (>=2010)
+UPDATE vehiculos
+SET capacidad = LEAST(GREATEST(IFNULL(capacidad,4),1),5);
+
+UPDATE vehiculos
+SET anno = 2010
+WHERE anno IS NULL OR anno < 2010;
+
+-- Arreglar rides: espacios (1..5) y costo (>=0)
+UPDATE rides
+SET espacios = LEAST(GREATEST(IFNULL(espacios,1),1),5);
+
+UPDATE rides
+SET costo = 0
+WHERE costo IS NULL OR costo < 0;
+
+-- Ajustar rides cuyo espacios > capacidad del vehículo
+UPDATE rides r
+JOIN vehiculos v ON v.id_vehiculo = r.id_vehiculo
+SET r.espacios = v.capacidad
+WHERE r.espacios > v.capacidad;
+
+ALTER TABLE vehiculos
+  MODIFY capacidad TINYINT NOT NULL DEFAULT 4,
+  MODIFY anno INT NOT NULL;
+
+ALTER TABLE rides
+  MODIFY espacios TINYINT NOT NULL,
+  MODIFY costo DECIMAL(10,2) NOT NULL;
+
+
+
+-- Vehículos
+ALTER TABLE vehiculos
+  ADD CONSTRAINT chk_vehiculos_capacidad CHECK (capacidad BETWEEN 1 AND 5);
+
+ALTER TABLE vehiculos
+  ADD CONSTRAINT chk_vehiculos_anno CHECK (anno >= 2010);
+
+-- Rides
+ALTER TABLE rides
+  ADD CONSTRAINT chk_rides_espacios CHECK (espacios BETWEEN 1 AND 5);
+
+ALTER TABLE rides
+  ADD CONSTRAINT chk_rides_costo CHECK (costo >= 0);

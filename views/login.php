@@ -29,6 +29,14 @@
       <label for="contrasena">Contraseña:</label>
       <input type="password" id="contrasena" name="contrasena" placeholder="" required>
 
+      <?php
+      session_start();
+      if (isset($_SESSION['error_login'])) {
+          echo "<div class='mensaje-error'>{$_SESSION['error_login']}</div>";
+          unset($_SESSION['error_login']); // 🔄 eliminar el mensaje después de mostrarlo
+      }
+      ?>
+
       <div class="acciones">
         <input type="submit" value="Iniciar Sesión" class="btn">
         <p>¿Aún no tienes cuenta? <a href="registro.php">Regístrate aquí</a></p>

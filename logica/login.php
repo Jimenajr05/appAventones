@@ -6,14 +6,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $correo = trim($_POST['correo'] ?? '');
     $contrasena = $_POST['contrasena'] ?? '';
 
+    // 🔹 Validación de campos vacíos
     if ($correo === '' || $contrasena === '') {
-        echo "<p style='color:red; text-align:center;'>❗ Completa todos los campos.</p>";
-        echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
-        include("../includes/cerrarConexion.php");
+        $_SESSION['error_login'] = "❗ Completa todos los campos.";
+        header("Location: ../views/login.php");
         exit;
     }
 
-    // 🔹 Ahora también obtenemos la fotografía
+    // 🔹 Buscar usuario
     $stmt = $conexion->prepare("SELECT id_usuario, nombre, tipo, contrasena, estado, fotografia FROM usuarios WHERE correo = ? LIMIT 1");
     $stmt->bind_param('s', $correo);
     $stmt->execute();
@@ -26,14 +26,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // 🔐 Verificación de contraseña
         $loginValido = false;
         if ($tipo === 'administrador' && $contrasena === $hash_contrasena) {
-            $loginValido = true; // los admin pueden tener clave sin hash
+            $loginValido = true;
         } elseif (password_verify($contrasena, $hash_contrasena)) {
             $loginValido = true;
         }
 
         if ($loginValido) {
             if ($estado === 'activo') {
-                // ✅ Guardamos todos los datos en sesión
+                // ✅ Guardamos datos en sesión
                 $_SESSION['id_usuario'] = $id_usuario;
                 $_SESSION['nombre'] = $nombre;
                 $_SESSION['tipo'] = $tipo;
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     ? "../" . $fotografia
                     : "../assets/Estilos/Imagenes/default-user.png";
 
-                // 🔀 Redirección según el tipo de usuario
+                // 🔀 Redirección según tipo
                 switch ($tipo) {
                     case 'chofer':
                         header("Location: ../views/chofer.php");
@@ -56,20 +56,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         header("Location: ../views/dashboard.php");
                         break;
                 }
+
                 $stmt->close();
                 include("../includes/cerrarConexion.php");
                 exit;
             } else {
-                echo "<p style='color:red; text-align:center;'>⚠ Tu cuenta está pendiente o inactiva.</p>";
-                echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
+                $_SESSION['error_login'] = "⚠️ Tu cuenta está inactiva o pendiente de activación.";
+                header("Location: ../views/login.php");
+                exit;
             }
         } else {
-            echo "<p style='color:red; text-align:center;'>❌ Usuario o contraseña incorrectos.</p>";
-            echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
+            $_SESSION['error_login'] = "❌ Usuario o contraseña incorrectos.";
+            header("Location: ../views/login.php");
+            exit;
         }
     } else {
-        echo "<p style='color:red; text-align:center;'>❌ Usuario o contraseña incorrectos.</p>";
-        echo "<p style='text-align:center;'><a href='../views/login.php'>Volver</a></p>";
+        $_SESSION['error_login'] = "❌ Usuario o contraseña incorrectos.";
+        header("Location: ../views/login.php");
+        exit;
     }
 
     $stmt->close();

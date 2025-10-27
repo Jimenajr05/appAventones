@@ -109,32 +109,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
-    $foto_ruta = null; // Inicializa la ruta que se guardará en la BD
-
-    // Verificar si se subió un archivo sin errores
-    if (isset($_FILES['fotografia']) && $_FILES['fotografia']['error'] === UPLOAD_ERR_OK) {
-        $directorioBase = "../assets/imagenesUsuarios/";
-
-        // 1. Crear el directorio si no existe
-        if (!is_dir($directorioBase)) {
-            mkdir($directorioBase, 0777, true);
-        }
-
-        // 2. Generar un nombre único para evitar conflictos
-        $ext = pathinfo($_FILES['fotografia']['name'], PATHINFO_EXTENSION);
-        $nombreArchivo = uniqid('user_') . '.' . $ext;
-        $rutaDestinoServidor = $directorioBase . $nombreArchivo;
-        
-        // 3. Mover el archivo subido
-        if (move_uploaded_file($_FILES['fotografia']['tmp_name'], $rutaDestinoServidor)) {
-            // 4. Ruta que se guarda en la BD (RELATIVA a la raíz del proyecto, sin el "../")
-            $foto_ruta = "assets/imagenesUsuarios/" . $nombreArchivo;
-        } else {
-            // Manejo de error si el archivo no se pudo mover
-            error_log("Error al mover archivo: " . $rutaDestinoServidor);
-        }
-    }
-
     // =============================
     // 🧩 Token de activación
     // =============================
