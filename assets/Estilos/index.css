@@ -177,3 +177,30 @@ footer p {
   letter-spacing: 0.4px;
   opacity: 0.9;
 }
+
+#map {
+  height: 350px;
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+#map-hint {
+  text-align: center;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: 1px solid #bae6fd;
+}
+
+/* Mensaje error mapa */
+.map-error {
+  background: #fee !important;
+  color: #b91c1c !important;
+  border: 1px solid #fca5a5 !important;
+}
+

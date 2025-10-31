@@ -292,31 +292,3 @@ footer p {
   letter-spacing: 0.3px;
   opacity: 0.95;
 }
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (max-width: 600px) {
-  .toolbar {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .toolbar-left,
-  .toolbar-right {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .container {
-    padding: 25px 15px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .logo-hero {
-    width: 140px;
-  }
-}

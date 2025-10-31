@@ -251,7 +251,7 @@ footer {
   color: white;
   padding: 20px 0;
   font-size: 0.9rem;
-  margin-top: 234px;
+  margin-top: 175px;
   border-top: 3px solid #054733;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -260,26 +260,4 @@ footer p {
   margin: 0;
   letter-spacing: 0.3px;
   opacity: 0.95;
-}
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (max-width: 600px) {
-  header {
-    padding: 20px 0;
-  }
-
-  header img {
-    width: 140px;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .container {
-    padding: 25px 15px;
-  }
 }

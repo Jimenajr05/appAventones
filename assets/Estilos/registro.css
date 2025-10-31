@@ -184,26 +184,3 @@ footer p {
   opacity: 0.95;
 }
 
-/* ======== RESPONSIVE ======== */
-@media (max-width: 700px) {
-    form {
-        grid-template-columns: 1fr;
-    }
-
-    .btn,
-    input[type="submit"] {
-        grid-column: 1;
-    }
-
-    .container {
-        width: 90%;
-        padding: 20px;
-    }
-
-    .btn-volver-header {
-        top: 10px;
-        left: 10px;
-        padding: 6px 10px;
-        font-size: 13px;
-    }
-}

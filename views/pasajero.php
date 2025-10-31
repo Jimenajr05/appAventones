@@ -1,15 +1,24 @@
+<!--
+    // =====================================================
+    // Script: pasajero.php
+    // Descripción: **Panel principal** del Pasajero. Actúa
+    // como menú, ofreciendo enlaces a **Buscar Rides** y
+    // a **Mis Reservas**.
+    // Creado por: Jimena y Fernanda.
+    // =====================================================
+-->
 <?php 
-session_start();
-include("../includes/conexion.php");
+    session_start();
+    include("../includes/conexion.php");
 
-if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'pasajero') {
-    header("Location: login.php");
-    exit;
-}
+    if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'pasajero') {
+        header("Location: login.php");
+        exit;
+    }
 
-$idPasajero = $_SESSION['id_usuario'];
-$mensaje = $_GET['msg'] ?? "";
-$fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
+    $idPasajero = $_SESSION['id_usuario'];
+    $mensaje = $_GET['msg'] ?? "";
+    $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
 ?>
 <!DOCTYPE html>
 <html lang="es">

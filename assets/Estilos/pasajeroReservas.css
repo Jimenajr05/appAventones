@@ -42,24 +42,6 @@ body {
   color: #ffc107;
 }
 
-/* ======== RESPONSIVE ======== */
-@media (max-width: 600px) {
-  .header-pasajero {
-    padding: 20px 0;
-  }
-
-  .header-pasajero .logo-hero {
-    width: 140px;
-  }
-
-  .btn-volver-header {
-    top: 10px;
-    left: 10px;
-    padding: 6px 10px;
-    font-size: 13px;
-  }
-}
-
 /* ======== TOOLBAR ======== */
 .toolbar {
     display: flex;
@@ -241,7 +223,7 @@ footer {
   color: white;
   padding: 20px 0;
   font-size: 0.9rem;
-  margin-top: 175px;
+  margin-top: 200px;
   border-top: 3px solid #054733;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
 }

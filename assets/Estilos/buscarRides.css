@@ -1,3 +1,10 @@
+html,
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ======== RESETEO Y FUENTE ======== */
 body {
   font-family: "Segoe UI", Arial, sans-serif;
@@ -18,7 +25,6 @@ body {
 
 .header-pasajero .logo-hero {
   width: 170px;
-  /* 🔹 tamaño uniforme */
   display: block;
   margin: 0 auto 10px;
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
@@ -39,24 +45,6 @@ body {
 
 .resaltado {
   color: #ffc107;
-}
-
-/* ======== RESPONSIVE ======== */
-@media (max-width: 600px) {
-  .header-pasajero {
-    padding: 20px 0;
-  }
-
-  .header-pasajero .logo-hero {
-    width: 140px;
-  }
-
-  .btn-volver-header {
-    top: 10px;
-    left: 10px;
-    padding: 6px 10px;
-    font-size: 13px;
-  }
 }
 
 /* ======== TOOLBAR ======== */
@@ -149,6 +137,7 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
 
 /* ================= FORMULARIO DE BÚSQUEDA ================= */
@@ -183,10 +172,23 @@ form input[type="submit"]:hover {
   background-color: #0056b3;
 }
 
+form input[type="button"] {
+  background-color: #28a745;
+  /* Verde */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+form input[type="button"]:hover {
+  background-color: #1e7e34;
+}
+
 /* ================= TABLAS ================= */
-/* ============================================================
-   TABLAS MODERNAS
-============================================================ */
+
 .table-container {
   margin-top: 30px;
   border-radius: 10px;
@@ -230,7 +232,6 @@ tr:hover td {
 }
 
 /* ================= BOTÓN RESERVAR ================= */
-/* ======== BOTÓN RESERVAR ======== */
 .btn-reservar {
   display: inline-block;
   background-color: #007bff;
@@ -257,7 +258,7 @@ footer {
   color: white;
   padding: 20px 0;
   font-size: 0.9rem;
-  margin-top: 288px;
+  margin-top: auto;
   border-top: 3px solid #054733;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -293,4 +294,34 @@ footer p {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+/* ============================================================
+   MAPA LEAFLET (Buscar Rides)
+============================================================ */
+
+#map {
+  height: 350px;
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+#map-hint {
+  text-align: center;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: 1px solid #bae6fd;
+}
+
+/* Mensaje error mapa */
+.map-error {
+  background: #fee !important;
+  color: #b91c1c !important;
+  border: 1px solid #fca5a5 !important;
 }
