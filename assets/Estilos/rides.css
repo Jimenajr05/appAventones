@@ -112,32 +112,3 @@ footer p {
   opacity: 0.95;
 }
 
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (max-width: 600px) {
-  .topbar {
-    flex-direction: column;
-    padding: 10px 20px;
-    gap: 10px;
-  }
-
-  .topbar .left {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-  }
-
-  .topbar .right {
-    justify-content: center;
-  }
-
-  .user-photo {
-    width: 32px;
-    height: 32px;
-  }
-
-  .brand {
-    font-size: 1rem;
-  }
-}

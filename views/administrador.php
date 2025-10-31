@@ -1,49 +1,59 @@
+<!--
+    // =====================================================
+    // Script: administrador.php (Vista/Controlador)
+    // Descripción: Panel de control exclusivo para el Administrador.
+    // **Incluye la lógica de gestión (activar/desactivar usuarios
+    // y crear admins)** y renderiza la vista con la tabla de
+    // usuarios y el formulario de registro de nuevos administradores.
+    // Creado por: Jimena y Fernanda.
+    // =====================================================
+-->
 <?php
-session_start();
-include("../includes/conexion.php");
-include("../logica/administrador.php");
+    session_start();
+    include("../includes/conexion.php");
+    include("../logica/administrador.php");
 
-// Solo el administrador puede ingresar
-if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
-    header("Location: login.php");
-    exit;
-}
+    // Solo el administrador puede ingresar
+    if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
+        header("Location: login.php");
+        exit;
+    }
 
-$admin = new Administrador($conexion);
+    $admin = new Administrador($conexion);
 
-// Crear nuevo administrador
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['crearAdmin'])) {
-    $admin->procesarNuevoAdministrador($_POST, $_FILES);
-}
+    // Crear nuevo administrador
+    if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['crearAdmin'])) {
+        $admin->procesarNuevoAdministrador($_POST, $_FILES);
+    }
 
-// Cambiar estado de usuario (activar/desactivar)
-if (isset($_GET['accion']) && isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $accion = $_GET['accion'];
-    $nuevoEstado = ($accion === 'activar') ? 'activo' : 'inactivo';
-    $admin->cambiarEstado($id, $nuevoEstado);
-    header("Location: administrador.php");
-    exit;
-}
+    // Cambiar estado de usuario (activar/desactivar)
+    if (isset($_GET['accion']) && isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        $accion = $_GET['accion'];
+        $nuevoEstado = ($accion === 'activar') ? 'activo' : 'inactivo';
+        $admin->cambiarEstado($id, $nuevoEstado);
+        header("Location: administrador.php");
+        exit;
+    }
 
-// Obtener lista de usuarios
-$usuarios = $admin->obtenerUsuarios();
+    // Obtener lista de usuarios
+    $usuarios = $admin->obtenerUsuarios();
 
-// ✅ Obtener la foto del administrador logueado
-$fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
-if (!file_exists($fotoUsuario) && file_exists("../" . $fotoUsuario)) {
-    $fotoUsuario = "../" . $fotoUsuario;
-}
+    // ✅ Obtener la foto del administrador logueado
+    $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
+    if (!file_exists($fotoUsuario) && file_exists("../" . $fotoUsuario)) {
+        $fotoUsuario = "../" . $fotoUsuario;
+    }
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel del Administrador | Aventones</title>
-    <link rel="stylesheet" href="../assets/Estilos/administrador.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Panel del Administrador | Aventones</title>
+        <link rel="stylesheet" href="../assets/Estilos/administrador.css">
+    </head>
     <body>
 
         <header>

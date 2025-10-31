@@ -29,7 +29,6 @@ body {
 
 .logo-hero {
   width: 170px;
-  /* 🔹 tamaño uniforme */
   display: block;
   margin: 0 auto 10px;
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
@@ -69,13 +68,6 @@ body {
   display: flex;
   align-items: center;
   gap: 25px;
-}
-
-.brand {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #0b3d2e;
-  letter-spacing: 0.5px;
 }
 
 .nav-link {
@@ -156,7 +148,8 @@ body {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 35px;
+  gap: 30px;
+  margin-bottom: 20px;
 }
 
 label {
@@ -168,7 +161,7 @@ label {
 
 input,
 select {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -179,6 +172,11 @@ input:focus,
 select:focus {
   border-color: #007bff;
   outline: none;
+}
+
+input[readonly] {
+  background-color: #f5f5f5;
+  color: #333;
 }
 
 .center {
@@ -224,6 +222,36 @@ select:focus {
 .btn-off:hover {
   background-color: #a71d2a;
 }
+
+/* ============================================================
+   MAPA
+============================================================ */
+#map {
+  height: 350px;
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+#map-hint {
+  text-align: center;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: 1px solid #bae6fd;
+}
+
+/* Mensaje error mapa */
+.map-error {
+  background: #fee !important;
+  color: #b91c1c !important;
+  border: 1px solid #fca5a5 !important;
+}
+
 
 /* ============================================================
    TABLA
@@ -279,30 +307,4 @@ footer p {
   margin: 0;
   letter-spacing: 0.3px;
   opacity: 0.95;
-}
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-@media (max-width: 600px) {
-  .hero-header {
-    padding: 20px 0;
-  }
-
-  .logo-hero {
-    width: 140px;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .container {
-    padding: 25px 15px;
-  }
 }

@@ -218,26 +218,4 @@ footer p {
   letter-spacing: 0.3px;
   opacity: 0.95;
 }
-/* ============================================================
-   RESPONSIVE GENERAL
-============================================================ */
-@media (max-width: 600px) {
-  .toolbar {
-    flex-direction: column;
-    gap: 10px;
-  }
 
-  .toolbar-left,
-  .toolbar-right {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .container {
-    padding: 25px 15px;
-  }
-
-  .opciones {
-    gap: 20px;
-  }
-}
