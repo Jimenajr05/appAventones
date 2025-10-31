@@ -1,3 +1,12 @@
+<!--
+    // =====================================================
+    // Script: buscarRides.php (Lógica)
+    // Descripción: **Controlador de Búsqueda**. Procesa filtros
+    // (GET), ejecuta la consulta principal de rides y guarda
+    // los **resultados en sesión** para la vista.
+    // Creado por: Fernanda y Jimena.
+    // =====================================================
+-->
 <?php
 session_start();
 include("../includes/conexion.php");

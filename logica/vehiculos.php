@@ -1,11 +1,13 @@
 <!--
     // =====================================================
-    // Script: vehiculos.php
-    // Descripción: Lógica del Chofer para gestionar sus **Vehículos**
-    // (CRUD). Incluye validaciones (año, capacidad) y subida de fotos.
-    // Creado por: Jimena y Fernanda.
+    // Script: vehiculos.php (Lógica)
+    // Descripción: **Controlador CRUD de Vehículos**. Gestiona
+    // la **Creación, Edición y Eliminación** de vehículos
+    // de un Chofer, incluyendo el manejo de la **fotografía**.
+    // Creado por: Fernanda y Jimena.
     // =====================================================
 -->
+
 <?php
     session_start();
     include("../includes/conexion.php");
@@ -32,41 +34,39 @@
         $color = trim($_POST['color'] ?? '');
         $anno = (int)($_POST['anno'] ?? 0);
         $capacidad = (int)($_POST['capacidad'] ?? 0);
-
-        // 🔹 Validar color permitido
-        $coloresPermitidos = ["Blanco","Negro","Gris","Plata","Azul","Rojo","Verde","Amarillo","Naranja","Café","Beige","Vino","Turquesa","Morado"];
-        if (!in_array($color, $coloresPermitidos, true)) {
-            header("Location: ../views/vehiculos.php?msg=" . urlencode("Color inválido."));
+        
+        // 🔹 Validar color permitido (asumo que tienes esta lógica)
+        $coloresPermitidos = [
+            "Blanco","Negro","Gris","Plata","Azul","Rojo","Verde",
+            "Amarillo","Naranja","Café","Beige","Vino","Turquesa","Morado"
+        ];
+        if (!in_array($color, $coloresPermitidos)) {
+            $mensaje = "Error: El color seleccionado no es válido.";
+            header("Location: ../views/vehiculos.php?msg=" . urlencode($mensaje));
             exit;
         }
 
-        // 🔹 Validaciones de negocio
-        if ($anno < 2010) {
-            header("Location: ../views/vehiculos.php?msg=" . urlencode("No se aceptan vehículos anteriores a 2010."));
-            exit;
+        // 🛑 MANEJO DE ARCHIVO: Generar la ruta para la base de datos
+        $foto_ruta = null;
+        $directorio_destino = "../uploads/vehiculos/"; 
+        
+        // Crear carpeta si no existe
+        if (!is_dir($directorio_destino)) {
+            mkdir($directorio_destino, 0777, true);
         }
 
-        if ($capacidad < 1 || $capacidad > 5) {
-            header("Location: ../views/vehiculos.php?msg=" . urlencode("La capacidad debe estar entre 1 y 5."));
-            exit;
-        }
-
-        // ============================================================
-        // 📸 Subida de fotografía
-        // ============================================================
-        $foto_ruta = "";
-        if (isset($_FILES['fotografia']) && $_FILES['fotografia']['error'] == 0) {
-            $nombreArchivo = $_FILES['fotografia']['name'];
-            $tmp = $_FILES['fotografia']['tmp_name'];
-            $ext = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
-
-            if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
-                $nuevoNombre = uniqid("vehiculo_") . "." . $ext;
-                $destino = "../uploads/vehiculos/" . $nuevoNombre;
-
-                if (move_uploaded_file($tmp, $destino)) {
-                    $foto_ruta = "uploads/vehiculos/" . $nuevoNombre;
-                }
+        if (isset($_FILES['fotografia']) && $_FILES['fotografia']['error'] === UPLOAD_ERR_OK) {
+            $extension = pathinfo($_FILES['fotografia']['name'], PATHINFO_EXTENSION);
+            $nombre_archivo = uniqid("vehiculo-") . "." . $extension;
+            $ruta_completa_servidor = $directorio_destino . $nombre_archivo;
+            
+            if (move_uploaded_file($_FILES['fotografia']['tmp_name'], $ruta_completa_servidor)) {
+                // RUTA A GUARDAR EN LA BASE DE DATOS (relativa desde la raíz del proyecto)
+                $foto_ruta = "uploads/vehiculos/" . $nombre_archivo; 
+            } else {
+                $mensaje = "Error al mover el archivo subido.";
+                header("Location: ../views/vehiculos.php?msg=" . urlencode($mensaje));
+                exit;
             }
         }
 
@@ -76,41 +76,47 @@
         if (!empty($_POST['id_vehiculo'])) {
             // 🧾 Actualizar vehículo existente
             $idVehiculo = (int)$_POST['id_vehiculo'];
+            $ok = false;
 
             if ($foto_ruta) {
+                // Actualizar con nueva foto
                 $sql = "UPDATE vehiculos 
                         SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=?, fotografia=? 
                         WHERE id_vehiculo=? AND id_chofer=?";
                 $stmt = $conexion->prepare($sql);
-                // ✅ 9 variables -> 6 strings + 3 enteros
-                $stmt->bind_param("sssssisii",
+                // CORREGIDO: ssssiisii (4 strings, 2 int, 1 string, 2 int)
+                $stmt->bind_param("ssssiisii",
                     $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta, $idVehiculo, $idChofer
                 );
             } else {
+                // Si no hay nueva foto, NO incluir la columna fotografia en el UPDATE
                 $sql = "UPDATE vehiculos 
                         SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=? 
                         WHERE id_vehiculo=? AND id_chofer=?";
                 $stmt = $conexion->prepare($sql);
-                // ✅ 8 variables -> 4 strings + 4 enteros
+                // CORREGIDO: ssssiiii (4 strings, 2 int, 2 int)
                 $stmt->bind_param("ssssiiii",
                     $marca, $modelo, $placa, $color, $anno, $capacidad, $idVehiculo, $idChofer
                 );
             }
 
-            $ok = $stmt->execute();
-            $mensaje = $ok ? "Vehículo actualizado correctamente." : "Error al actualizar vehículo.";
+            if ($stmt) {
+                $ok = $stmt->execute();
+            }
+            $mensaje = $ok ? "Vehículo actualizado correctamente." : "Error al actualizar vehículo: " . $conexion->error;
 
         } else {
             // 🆕 Insertar nuevo vehículo
             $sql = "INSERT INTO vehiculos (id_chofer, marca, modelo, placa, color, anno, capacidad, fotografia)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conexion->prepare($sql);
+            // CORRECTO: issssiss (1 int, 4 strings, 2 int, 1 string)
             $stmt->bind_param("issssiss", 
                 $idChofer, $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta
             );
 
             $ok = $stmt->execute();
-            $mensaje = $ok ? "Vehículo agregado correctamente." : "Error al agregar vehículo.";
+            $mensaje = $ok ? "Vehículo agregado correctamente." : "Error al agregar vehículo: " . $conexion->error;
         }
 
         header("Location: ../views/vehiculos.php?msg=" . urlencode($mensaje));
@@ -122,14 +128,38 @@
     ============================================================ */
     if ($accion === "eliminar" && isset($_GET['id'])) {
         $id = (int)$_GET['id'];
+        
+        // 📝 Opcional: Obtener la ruta de la imagen para eliminarla del servidor
+        $sqlSelect = "SELECT fotografia FROM vehiculos WHERE id_vehiculo=? AND id_chofer=?";
+        $stmtSelect = $conexion->prepare($sqlSelect);
+        $stmtSelect->bind_param("ii", $id, $idChofer);
+        $stmtSelect->execute();
+        $foto_a_eliminar = $stmtSelect->get_result()->fetch_assoc()['fotografia'] ?? null;
+        
+        // Eliminar registro de la DB
         $sql = "DELETE FROM vehiculos WHERE id_vehiculo=? AND id_chofer=?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("ii", $id, $idChofer);
         $ok = $stmt->execute();
-        $mensaje = $ok ? "Vehículo eliminado correctamente." : "Error al eliminar.";
+        
+        if ($ok) {
+            $mensaje = "Vehículo eliminado correctamente.";
+            // Eliminar archivo físico si existe
+            if ($foto_a_eliminar && file_exists("../" . $foto_a_eliminar)) {
+                unlink("../" . $foto_a_eliminar);
+            }
+        } else {
+            $mensaje = "Error al eliminar el vehículo.";
+        }
+        
         header("Location: ../views/vehiculos.php?msg=" . urlencode($mensaje));
         exit;
     }
 
-    include("../includes/cerrarConexion.php");
+    // Si llega aquí sin POST o GET válido, redirige
+    header("Location: ../views/chofer.php");
+
+
+
+
 ?>

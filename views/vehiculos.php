@@ -118,7 +118,7 @@
 
                     <div>
                         <label>Año:</label>
-                        <input type="number" name="anno" min="2010" max="<?= date('Y') ?>"
+                        <input type="number" name="anno" min="2010" max="2030"<?= date('Y') ?>"
                             value="<?= htmlspecialchars($vehiculoEdit['anno'] ?? '') ?>" required>
                         <small>Solo modelos 2010 o más nuevos.</small>
                     </div>

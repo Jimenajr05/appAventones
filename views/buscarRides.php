@@ -1,15 +1,16 @@
 <!--
     // =====================================================
-    // Script: buscarRides.php (Vista Pasajero)
-    // Descripción: Panel de **Búsqueda de Aventones**. Procesa
-    // filtros GET y consulta la base de datos. Muestra
-    // resultados en tabla e integra un **Mapa Leaflet**
-    // para seleccionar origen/destino.
-    // Creado por: Jimena y Fernanda.
+    // Script: buscarRides.php (Vista)
+    // Descripción: **Vista de Búsqueda** del Pasajero.
+    // Muestra el formulario de filtros, la **tabla de rides**
+    // y un **Mapa Leaflet** para selección de rutas.
+    // Creado por: Fernanda y Jimena.
     // =====================================================
 -->
+
 <?php
     session_start();
+    // Asegúrate de que este archivo carga la variable $conexion
     include("../includes/conexion.php");
 
     $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
@@ -24,10 +25,14 @@
     if (!in_array($ordenar, $permitidos)) $ordenar = 'fecha';
     if ($direccion !== 'ASC' && $direccion !== 'DESC') $direccion = 'ASC';
 
-    // Consulta
-    $sql = "SELECT r.*, v.marca, v.modelo, v.anno 
+    // Consulta CORREGIDA: Se cambió u.foto por u.fotografia.
+    $sql = "SELECT r.*, v.marca, v.modelo, v.anno, v.placa,
+                   v.fotografia AS foto_vehiculo,
+                   u.nombre AS nombre_chofer, 
+                   u.fotografia AS foto_chofer
             FROM rides r 
             JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo 
+            JOIN usuarios u ON r.id_chofer = u.id_usuario 
             WHERE 1=1";
     $params = [];
     $types = "";
@@ -52,7 +57,13 @@
     }
     $sql .= " $direccion";
 
+    // Manejo de errores de sentencia preparada
     $stmt = $conexion->prepare($sql);
+
+    if ($stmt === false) {
+        die("Error al preparar la consulta SQL: " . $conexion->error);
+    }
+
     if (!empty($params)) $stmt->bind_param($types, ...$params);
     $stmt->execute();
     $resultado = $stmt->get_result();
@@ -69,195 +80,195 @@
 
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <title>Buscar Rides | Aventones</title>
-        <link rel="stylesheet" href="../assets/Estilos/buscarRides.css">
+        <head>
+            <meta charset="UTF-8">
+            <title>Buscar Rides | Aventones</title>
+            <link rel="stylesheet" href="../assets/Estilos/buscarRides.css">
 
-        <!-- 🌍 Leaflet -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    </head>
-    <body>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        </head>
+        <body>
 
-        <!-- 🟢 HEADER -->
-        <header class="header-pasajero">
-            <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
-            <h1>Bienvenido a <span class="resaltado">Aventones.com</span></h1>
-            <h2>Encuentra tu viaje de forma rápida y segura</h2>
-        </header>
+            <header class="header-pasajero">
+                <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
+                <h1>Bienvenido a <span class="resaltado">Aventones.com</span></h1>
+                <h2>Encuentra tu viaje de forma rápida y segura</h2>
+            </header>
 
-        <!-- ⚪ TOOLBAR -->
-        <nav class="toolbar">
-            <div class="toolbar-left">
-                <a href="pasajero.php" class="nav-link">Panel de Pasajero</a>
-                <a href="buscarRides.php" class="nav-link active">Buscar Rides</a>
-                <a href="pasajeroReservas.php" class="nav-link">Mis Reservas</a>
-            </div>
-            <div class="toolbar-right">
-                <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
-                <img src="<?= htmlspecialchars($fotoUsuario); ?>" class="user-photo" alt="Usuario">
-                <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
-            </div>
-        </nav>
+            <nav class="toolbar">
+                <div class="toolbar-left">
+                    <a href="pasajero.php" class="nav-link">Panel de Pasajero</a>
+                    <a href="buscarRides.php" class="nav-link active">Buscar Rides</a>
+                    <a href="pasajeroReservas.php" class="nav-link">Mis Reservas</a>
+                </div>
+                <div class="toolbar-right">
+                    <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
+                    <img src="<?= htmlspecialchars($fotoUsuario); ?>" class="user-photo" alt="Usuario">
+                    <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
+                </div>
+            </nav>
 
-        <!-- 🔍 FORMULARIO -->
-        <section class="container">
-            <form method="GET" action="buscarRides.php" class="busqueda">
-                <label>Origen:</label>
-                <input type="text" name="origen" id="origen" value="<?= htmlspecialchars($origen) ?>" placeholder="Selecciona en el mapa o escribe...">
+            <section class="container">
+                <form method="GET" action="buscarRides.php" class="busqueda">
+                    <label>Origen:</label>
+                    <input type="text" name="origen" id="origen" value="<?= htmlspecialchars($origen) ?>" placeholder="Selecciona en el mapa o escribe...">
 
-                <label>Destino:</label>
-                <input type="text" name="destino" id="destino" value="<?= htmlspecialchars($destino) ?>" placeholder="Selecciona en el mapa o escribe...">
+                    <label>Destino:</label>
+                    <input type="text" name="destino" id="destino" value="<?= htmlspecialchars($destino) ?>" placeholder="Selecciona en el mapa o escribe...">
 
-                <label>Ordenar por:</label>
-                <select name="ordenar">
-                    <option value="fecha" <?= $ordenar == 'fecha' ? 'selected' : '' ?>>Fecha</option>
-                    <option value="origen" <?= $ordenar == 'origen' ? 'selected' : '' ?>>Origen</option>
-                    <option value="destino" <?= $ordenar == 'destino' ? 'selected' : '' ?>>Destino</option>
-                </select>
+                    <label>Ordenar por:</label>
+                    <select name="ordenar">
+                        <option value="fecha" <?= $ordenar == 'fecha' ? 'selected' : '' ?>>Fecha</option>
+                        <option value="origen" <?= $ordenar == 'origen' ? 'selected' : '' ?>>Origen</option>
+                        <option value="destino" <?= $ordenar == 'destino' ? 'selected' : '' ?>>Destino</option>
+                    </select>
 
-                <select name="direccion">
-                    <option value="ASC" <?= $direccion == 'ASC' ? 'selected' : '' ?>>Ascendente</option>
-                    <option value="DESC" <?= $direccion == 'DESC' ? 'selected' : '' ?>>Descendente</option>
-                </select>
+                    <select name="direccion">
+                        <option value="ASC" <?= $direccion == 'ASC' ? 'selected' : '' ?>>Ascendente</option>
+                        <option value="DESC" <?= $direccion == 'DESC' ? 'selected' : '' ?>>Descendente</option>
+                    </select>
 
-                <input type="submit" value="Buscar">
-                <input type="button" value="Limpiar" onclick="window.location.href='buscarRides.php'">
-            </form>
+                    <input type="submit" value="Buscar">
+                    <input type="button" value="Limpiar" onclick="window.location.href='buscarRides.php'">
+                </form>
 
-            <!-- 🗺️ Mapa -->
-            <div id="map-hint">🗺️ Haz clic en el mapa para elegir <b>origen</b> y <b>destino</b>.</div>
-            <div id="map"></div>
+                <div id="map-hint">🗺️ Haz clic en el mapa para elegir <b>origen</b> y <b>destino</b>.</div>
+                <div id="map"></div>
+                
+                <?php 
+                    $error_msg = $_GET['error'] ?? '';
+                    if ($error_msg): 
+                ?>
+                    <p style="color: red; text-align: center; border: 1px solid red; padding: 10px; margin-bottom: 20px; background-color: #ffe0e0; border-radius: 5px;">
+                        ❌ Error: <?= htmlspecialchars($error_msg); ?>
+                    </p>
+                <?php endif; ?>
+                <h2>Resultados de Rides</h2>
 
-            <h2>Resultados de Rides</h2>
-
-            <?php if (count($rides) > 0): ?>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Chofer</th>
-                                <th>Origen</th>
-                                <th>Destino</th>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                                <th>Vehículo</th>
-                                <th>Costo</th>
-                                <th>Espacios</th>
-                                <?php if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 'pasajero'): ?>
-                                    <th>Acción</th>
-                                <?php endif; ?>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($rides as $r): ?>
+                <?php if (count($rides) > 0): ?>
+                    <div class="table-container">
+                        <table>
+                            <thead>
                                 <tr>
-                                    <!-- ✅ Foto + nombre chofer -->
-                                    <td>
-                                        <img src="<?= '../' . ($r['foto_chofer'] ?? 'uploads/usuarios/default-user.png'); ?>"
-                                            style="width:45px;height:45px;border-radius:50%;object-fit:cover;border:2px solid #0c6f63;">
-
-                                        <br>
-                                        <?= htmlspecialchars($r['nombre_chofer']); ?>
-                                    </td>
-
-                                    <td><?= htmlspecialchars($r['inicio']); ?></td>
-                                    <td><?= htmlspecialchars($r['fin']); ?></td>
-                                    <td><?= htmlspecialchars($r['dia']); ?></td>
-                                    <td><?= htmlspecialchars($r['hora']); ?></td>
-
-                                    <!-- ✅ Vehículo + foto + placa -->
-                                    <td>
-                                        <img src="<?= '../' . ($r['foto_vehiculo'] ?? 'uploads/vehiculos/default-car.png'); ?>"
-                                             style="width:65px;height:45px;border-radius:6px;object-fit:cover;">
-
-                                        <br>
-                                        <?= htmlspecialchars($r['marca'] . ' ' . $r['modelo'] . ' ' . $r['placa']); ?>
-
-                                    </td>
-
-                                    <td>₡<?= number_format($r['costo'], 2); ?></td>
-                                    <td><?= htmlspecialchars($r['espacios']); ?></td>
-
-                                    <?php if ($_SESSION['tipo'] === 'pasajero'): ?>
-                                        <td><a href="../logica/reservas.php?accion=crear&id_ride=<?= $r['id_ride']; ?>" class="btn-reservar">Reservar</a></td>
+                                    <th>Chofer</th>
+                                    <th>Origen</th>
+                                    <th>Destino</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Vehículo</th>
+                                    <th>Costo</th>
+                                    <th>Espacios</th>
+                                    <?php if (isset($_SESSION['tipo']) && $_SESSION['tipo'] === 'pasajero'): ?>
+                                        <th>Acción</th>
                                     <?php endif; ?>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php else: ?>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($rides as $r): ?>
+                                    <tr>
+                                        <td>
+                                            <img src="<?= '../' . ($r['foto_chofer'] ?? 'uploads/usuarios/default-user.png'); ?>"
+                                                style="width:45px;height:45px;border-radius:50%;object-fit:cover;border:2px solid #0c6f63;">
 
-                <p style="text-align:center;">No se encontraron rides con esos criterios.</p>
-            <?php endif; ?>
-        </section>
+                                            <br>
+                                            <?= htmlspecialchars($r['nombre_chofer']); ?>
+                                        </td>
 
-        <footer>
-            <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
-        </footer>
+                                        <td><?= htmlspecialchars($r['inicio']); ?></td>
+                                        <td><?= htmlspecialchars($r['fin']); ?></td>
+                                        <td><?= htmlspecialchars($r['dia']); ?></td>
+                                        <td><?= htmlspecialchars($r['hora']); ?></td>
 
-        <!-- 🌍 SCRIPT MAPA LEAFLET -->
-  <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const mapDiv = document.getElementById("map");
-    mapDiv.style.height = "400px";
-    
-    const map = L.map('map').setView([10.01625, -84.21163], 9); // Zona UTN Alajuela
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-    }).addTo(map);
+                                        <td>
+                                            <img src="<?= '../' . ($r['foto_vehiculo'] ?? 'uploads/vehiculos/default-car.png'); ?>"
+                                                style="width:65px;height:45px;border-radius:6px;object-fit:cover;">
 
-    let marcadorOrigen = null, marcadorDestino = null;
-    let seleccion = "origen";
-    const hint = document.getElementById("map-hint");
+                                            <br>
+                                            <?= htmlspecialchars($r['marca'] . ' ' . $r['modelo'] . ' ' . $r['placa']); ?>
 
-    function esAlajuela(texto) {
-        return texto.toLowerCase().includes("alajuela");
-    }
+                                        </td>
 
-    async function getLugar(lat, lng) {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
-        const data = await res.json();
-        return data.display_name || `${lat}, ${lng}`;
-    }
+                                        <td>₡<?= number_format($r['costo'], 2); ?></td>
+                                        <td><?= htmlspecialchars($r['espacios']); ?></td>
 
-    map.on("click", async (e) => {
-        const { lat, lng } = e.latlng;
-        const lugar = await getLugar(lat, lng);
+                                        <?php if ($_SESSION['tipo'] === 'pasajero'): ?>
+                                            <td><a href="../logica/reservas.php?accion=crear&id_ride=<?= $r['id_ride']; ?>" class="btn-reservar">Reservar</a></td>
+                                        <?php endif; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
 
-        // ❗ Validar que la ubicación sea Alajuela
-        if (!esAlajuela(lugar)) {
-            hint.classList.add("map-error");
-            hint.innerHTML = "❌ Solo se permiten ubicaciones dentro de <b>Alajuela</b>";
-            return;
-        } else {
-            hint.classList.remove("map-error");
-        }
+                    <p style="text-align:center;">No se encontraron rides con esos criterios.</p>
+                <?php endif; ?>
+            </section>
 
-        if (seleccion === "origen") {
-            if (marcadorOrigen) map.removeLayer(marcadorOrigen);
-            marcadorOrigen = L.marker([lat, lng]).addTo(map).bindPopup("📍 Origen").openPopup();
-            document.getElementById("origen").value = lugar;
-            seleccion = "destino";
-            hint.innerHTML = "📍 Ahora selecciona el <b>destino</b>.";
-        } else {
-            if (marcadorDestino) map.removeLayer(marcadorDestino);
-            marcadorDestino = L.marker([lat, lng]).addTo(map).bindPopup("🏁 Destino").openPopup();
-            document.getElementById("destino").value = lugar;
-            seleccion = "origen";
-            hint.innerHTML = "✅ Origen y destino listos. Puedes buscar.";
-        }
+            <footer>
+                <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
+            </footer>
 
-        if (marcadorOrigen && marcadorDestino) {
-            const puntos = [marcadorOrigen.getLatLng(), marcadorDestino.getLatLng()];
-            L.polyline(puntos, { color: "blue" }).addTo(map);
-        }
-    });
-});
-</script>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const mapDiv = document.getElementById("map");
+                    mapDiv.style.height = "400px";
+                    
+                    const map = L.map('map').setView([10.01625, -84.21163], 9); // Zona UTN Alajuela
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19
+                    }).addTo(map);
 
-    </body>
+                    let marcadorOrigen = null, marcadorDestino = null;
+                    let seleccion = "origen";
+                    const hint = document.getElementById("map-hint");
+
+                    function esAlajuela(texto) {
+                        return texto.toLowerCase().includes("alajuela");
+                    }
+
+                    async function getLugar(lat, lng) {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+                        const data = await res.json();
+                        return data.display_name || `${lat}, ${lng}`;
+                    }
+
+                    map.on("click", async (e) => {
+                        const { lat, lng } = e.latlng;
+                        const lugar = await getLugar(lat, lng);
+
+                        // ❗ Validar que la ubicación sea Alajuela
+                        if (!esAlajuela(lugar)) {
+                            hint.classList.add("map-error");
+                            hint.innerHTML = "❌ Solo se permiten ubicaciones dentro de <b>Alajuela</b>";
+                            return;
+                        } else {
+                            hint.classList.remove("map-error");
+                        }
+
+                        if (seleccion === "origen") {
+                            if (marcadorOrigen) map.removeLayer(marcadorOrigen);
+                            marcadorOrigen = L.marker([lat, lng]).addTo(map).bindPopup("📍 Origen").openPopup();
+                            document.getElementById("origen").value = lugar;
+                            seleccion = "destino";
+                            hint.innerHTML = "📍 Ahora selecciona el <b>destino</b>.";
+                        } else {
+                            if (marcadorDestino) map.removeLayer(marcadorDestino);
+                            marcadorDestino = L.marker([lat, lng]).addTo(map).bindPopup("🏁 Destino").openPopup();
+                            document.getElementById("destino").value = lugar;
+                            seleccion = "origen";
+                            hint.innerHTML = "✅ Origen y destino listos. Puedes buscar.";
+                        }
+
+                        if (marcadorOrigen && marcadorDestino) {
+                            const puntos = [marcadorOrigen.getLatLng(), marcadorDestino.getLatLng()];
+                            L.polyline(puntos, { color: "blue" }).addTo(map);
+                        }
+                    });
+                });
+            </script>
+
+        </body>
 </html>
