@@ -1,6 +1,4 @@
-/* ============================================================
-   ESTILOS GENERALES
-============================================================ */
+/* ======== ESTILOS GENERALES ======== */
 body {
   font-family: "Segoe UI", Arial, sans-serif;
   background-color: #f4f7f8;
@@ -8,9 +6,7 @@ body {
   padding: 0;
 }
 
-/* ============================================================
-   HEADER CHOFER (igual al de pasajero)
-============================================================ */
+/* ======== HEADER ======== */
 .hero-header {
   background: linear-gradient(90deg, #063125, #109686);
   color: #fff;
@@ -44,9 +40,7 @@ body {
   color: #ffc107;
 }
 
-/* ============================================================
-   TOOLBAR (barra de navegación superior)
-============================================================ */
+/* ======== TOOLBAR ======== */
 .toolbar {
   display: flex;
   justify-content: space-between;
@@ -99,9 +93,7 @@ body {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
-/* ============================================================
-   BOTÓN SALIR
-============================================================ */
+/* ======== BOTÓN SALIR ======== */
 .logout-btn {
   background-color: #007bff;
   color: white;
@@ -116,9 +108,22 @@ body {
   background-color: #0056b3;
 }
 
-/* ============================================================
-   CONTENEDOR PRINCIPAL
-============================================================ */
+/* ======== BOTÓN EDITAR PERFIL ======== */
+.edit-btn {
+  background-color: #109686;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease;
+}
+
+.edit-btn:hover {
+  background-color: #0B3D2E;
+}
+
+/* ======== CONTENEDOR PRINCIPAL ======== */
 .container {
   width: 90%;
   max-width: 1100px;
@@ -140,9 +145,7 @@ body {
   text-align: center;
 }
 
-/* ============================================================
-   FORMULARIO DE VEHÍCULOS
-============================================================ */
+/* ======== FORMULARIO DE VEHÍCULOS ======== */
 h2 {
   color: #0b3d2e;
   text-align: center;
@@ -186,10 +189,8 @@ small {
   margin-top: 25px;
 }
 
-/* ============================================================
-   BOTONES
-============================================================ */
-.btn {
+/* ======== BOTONES ======== */
+.btn-blue {
   display: inline-block;
   padding: 10px 18px;
   border: none;
@@ -208,34 +209,49 @@ small {
   background-color: #0056b3;
 }
 
-.status-btn {
-  padding: 6px 10px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
+.acciones {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 0;
 }
 
-.btn-on {
-  background-color: #28a745;
-  color: white;
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-weight: 600;
+  color: white !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.15s ease-in-out;
+  line-height: 1;
 }
 
-.btn-on:hover {
-  background-color: #1e7e34;
+.action-edit {
+  background: #28a745;
 }
 
-.btn-off {
-  background-color: #dc3545;
-  color: white;
+.action-edit:hover {
+  background: #1e7e34;
+  transform: scale(1.05);
 }
 
-.btn-off:hover {
-  background-color: #a71d2a;
+.action-delete {
+  background: #dc3545;
 }
 
-/* ============================================================
-   TABLA DE VEHÍCULOS
-============================================================ */
+.action-delete:hover {
+  background: #a71d2a;
+  transform: scale(1.05);
+}
+
+/* ======== TABLA DE VEHÍCULOS ======== */
 .table-container {
   margin-top: 25px;
   border-radius: 10px;
@@ -272,10 +288,7 @@ tr:hover td {
   transition: background-color 0.3s ease;
 }
 
-
-/* ============================================================
-   FOOTER
-============================================================ */
+/* ======== FOOTER ======== */
 footer {
   text-align: center;
   background: linear-gradient(90deg, #063125, #109686);

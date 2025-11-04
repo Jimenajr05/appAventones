@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: vehiculos.php
     // Descripción: Panel de **CRUD de Vehículos** del Chofer.
@@ -6,8 +6,7 @@
     // de vehículos. La lógica es `../logica/vehiculos.php`.
     // Creado por: Jimena y Fernanda.
     // =====================================================
--->
-<?php
+
     session_start();
     include("../includes/conexion.php");
 
@@ -17,17 +16,31 @@
     }
 
     $idChofer = $_SESSION['id_usuario'];
-    $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
+    
+    // Foto de usuario del sistema
+    if (!empty($_SESSION['foto'])) {
+        // Si ya trae "uploads/" entonces la ruta es correcta
+        if (str_starts_with($_SESSION['foto'], 'uploads/')) {
+            $fotoUsuario = "../" . $_SESSION['foto'] . "?v=" . time();
+        } else {
+            // Compatibilidad con fotos antiguas
+            $fotoUsuario = "../assets/Estilos/Imagenes/" . $_SESSION['foto'] . "?v=" . time();
+        }
+    } else {
+        // Default
+        $fotoUsuario = "../assets/Estilos/Imagenes/default-user.png";
+    }
+
     $mensaje = $_GET['msg'] ?? "";
 
-    // 🔹 Obtener lista de vehículos
+    // Obtener lista de vehículos
     $sql = "SELECT * FROM vehiculos WHERE id_chofer = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $idChofer);
     $stmt->execute();
     $vehiculos = $stmt->get_result();
 
-    // 🔹 Modo edición
+    // Modo edición
     $vehiculoEdit = null;
     if (isset($_GET['accion']) && $_GET['accion'] === 'editar' && isset($_GET['id'])) {
         $idVehiculo = $_GET['id'];
@@ -37,6 +50,7 @@
         $vehiculoEdit = $stmt->get_result()->fetch_assoc();
     }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -46,14 +60,14 @@
     </head>
     <body>
 
-        <!-- 🟢 ENCABEZADO SUPERIOR -->
+        <!-- ENCABEZADO SUPERIOR -->
         <header class="hero-header">
             <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
             <h1>Bienvenido <span class="resaltado">Aventones.com</span></h1>
             <h2>Tu mejor opción para viajar seguros</h2>
         </header>
 
-        <!-- ⚪ TOOLBAR INFERIOR -->
+        <!-- TOOLBAR INFERIOR -->
         <nav class="toolbar">
             <div class="toolbar-left">
                 <a href="chofer.php" class="nav-link">Rides</a>
@@ -63,11 +77,12 @@
             <div class="toolbar-right">
                 <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
                 <img src="<?= htmlspecialchars($fotoUsuario); ?>" alt="Usuario" class="user-photo">
+                <a href="editarPerfil.php" class="edit-btn">Editar Perfil</a>
                 <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
             </div>
         </nav>
 
-        <!-- 🧾 CONTENIDO PRINCIPAL -->
+        <!-- CONTENIDO PRINCIPAL -->
         <section class="container">
             <?php if ($mensaje): ?>
                 <p class="alert"><?= htmlspecialchars($mensaje); ?></p>
@@ -175,10 +190,16 @@
                             <td><?= htmlspecialchars($v['anno']); ?></td>
                             <td><?= htmlspecialchars($v['capacidad']); ?></td>
                             <td>
-                                <a href="?accion=editar&id=<?= $v['id_vehiculo']; ?>" class="btn status-btn btn-on">✏️ Editar</a>
-                                <a href="../logica/vehiculos.php?accion=eliminar&id=<?= $v['id_vehiculo']; ?>"
-                                class="btn status-btn btn-off"
-                                onclick="return confirm('¿Eliminar este vehículo?');">🗑️ Eliminar</a>
+                                <div class="acciones">
+                                    <a href="?accion=editar&id=<?= $v['id_vehiculo']; ?>" class="action-btn action-edit">
+                                        ✏️ Editar
+                                    </a>
+                                    <a href="../logica/vehiculos.php?accion=eliminar&id=<?= $v['id_vehiculo']; ?>"
+                                    class="action-btn action-delete"
+                                    onclick="return confirm('¿Eliminar este vehículo?');">
+                                    🗑️ Eliminar
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         <?php endwhile; ?>

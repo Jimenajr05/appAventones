@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: index.php
     // Descripción: **Página de Inicio**. **Redirecciona**
@@ -6,12 +6,11 @@
     // por texto o **Mapa Leaflet**.
     // Creado por: Jimena y Fernanda.
     // =====================================================
--->
-<?php
+
     session_start();
     include("includes/conexion.php");
 
-    // --- Redirección si ya hay sesión activa ---
+    // Redirección si ya hay sesión activa 
     if (isset($_SESSION['tipo'])) {
         switch ($_SESSION['tipo']) {
             case 'administrador': header("Location: views/administrador.php"); exit;
@@ -20,11 +19,11 @@
         }
     }
 
-    // --- Búsqueda pública ---
+    // Búsqueda pública 
     $origen = trim($_GET['origen'] ?? '');
     $destino = trim($_GET['destino'] ?? '');
 
-    // Consulta base
+    // Consulta base de datos
     $sql = "SELECT 
                 r.id_ride, r.nombre, r.inicio, r.fin, r.hora, r.dia, r.costo, r.espacios,
                 v.marca, v.modelo, v.anno
@@ -58,10 +57,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Aventones - Inicio</title>
+        <title>Inicio | Aventones</title>
         <link rel="stylesheet" href="assets/Estilos/index.css">
 
-        <!-- 🌍 Leaflet -->
+        <!-- Leaflet -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     </head>
@@ -79,7 +78,7 @@
                 <p>Con Aventones puedes compartir viajes de manera cómoda, económica y segura.</p>
             </section>
 
-            <!-- 🔍 Buscador público -->
+            <!-- Buscador público -->
             <section class="busqueda">
 
                 <h2>Buscar Rides Disponibles</h2>
@@ -101,7 +100,7 @@
                     </div>
                 </form>
 
-                <!-- 🗺️ Mapa -->
+                <!-- Mapa -->
                 <div id="map-hint">🗺️ Selecciona en el mapa <b>origen</b> y <b>destino</b> dentro de Alajuela.</div>
                 <div id="map"></div>
 
@@ -130,7 +129,7 @@
                                 <td><?= htmlspecialchars($r['inicio']); ?></td>
                                 <td><?= htmlspecialchars($r['fin']); ?></td>
                                 <td><?= htmlspecialchars($r['dia']); ?></td>
-                                <td><?= htmlspecialchars($r['hora']); ?></td>
+                                <td><?= date("h:i A", strtotime($r['hora'])); ?></td>
                                 <td><?= htmlspecialchars("{$r['marca']} {$r['modelo']} ({$r['anno']})"); ?></td>
                                 <td>₡<?= number_format($r['costo'], 2); ?></td>
                                 <td><?= htmlspecialchars($r['espacios']); ?></td>
@@ -156,18 +155,18 @@
                 <p>Accede con tus credenciales asignadas.</p>
                 <a href="views/login.php" class="link-admin">Ir al panel administrativo</a>
             </section>
-
+            
         </main>
 
         <footer>
             <p>© <?= date('Y'); ?> Aventones | Universidad Técnica Nacional</p>
         </footer>
 
-        <!-- 🌍 Script Mapa -->
+        <!-- Script Mapa -->
         <script>
             document.addEventListener("DOMContentLoaded", () => {
 
-                const map = L.map('map').setView([10.01625, -84.21163], 9); // UTN Alajuela zona
+                const map = L.map('map').setView([10.01625, -84.21163], 9);
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19
@@ -217,9 +216,7 @@
                     L.polyline([mInicio.getLatLng(), mFin.getLatLng()], { color:"blue" }).addTo(map);
                     }
                 });
-
             });
         </script>
-
     </body>
 </html>

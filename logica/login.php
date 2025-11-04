@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: login.php (Lógica)
     // Descripción: Procesa el **Inicio de Sesión**. **Valida**
@@ -7,8 +7,7 @@
     // usuario.
     // Llamar con: POST desde `login.php`.
     // =====================================================
--->
-<?php
+
     session_start();
     include("../includes/conexion.php");
 
@@ -16,14 +15,14 @@
         $correo = trim($_POST['correo'] ?? '');
         $contrasena = $_POST['contrasena'] ?? '';
 
-        // 🔹 Validación de campos vacíos
+        // Validación de campos vacíos
         if ($correo === '' || $contrasena === '') {
             $_SESSION['error_login'] = "❗ Completa todos los campos.";
             header("Location: ../views/login.php");
             exit;
         }
 
-        // 🔹 Buscar usuario
+        // Buscar usuario
         $stmt = $conexion->prepare("SELECT id_usuario, nombre, tipo, contrasena, estado, fotografia FROM usuarios WHERE correo = ? LIMIT 1");
         $stmt->bind_param('s', $correo);
         $stmt->execute();
@@ -33,7 +32,7 @@
             $stmt->bind_result($id_usuario, $nombre, $tipo, $hash_contrasena, $estado, $fotografia);
             $stmt->fetch();
 
-            // 🔐 Verificación de contraseña
+            // Verificación de contraseña
             $loginValido = false;
             if ($tipo === 'administrador' && $contrasena === $hash_contrasena) {
                 $loginValido = true;
@@ -43,15 +42,17 @@
 
             if ($loginValido) {
                 if ($estado === 'activo') {
-                    // ✅ Guardamos datos en sesión
+                    // Guardamos datos en sesión
                     $_SESSION['id_usuario'] = $id_usuario;
                     $_SESSION['nombre'] = $nombre;
                     $_SESSION['tipo'] = $tipo;
-                    $_SESSION['foto'] = $fotografia && file_exists("../" . $fotografia)
-                        ? "../" . $fotografia
-                        : "../assets/Estilos/Imagenes/default-user.png";
+                    if ($fotografia && file_exists("../" . $fotografia)) {
+                        $_SESSION['foto'] = $fotografia;  // solo "uploads/usuarios/xxx.png"
+                    } else {
+                        $_SESSION['foto'] = "assets/Estilos/Imagenes/default-user.png"; //ruta interna
+                    }
 
-                    // 🔀 Redirección según tipo
+                    // Redirección según tipo
                     switch ($tipo) {
                         case 'chofer':
                             header("Location: ../views/chofer.php");
@@ -88,6 +89,5 @@
 
         $stmt->close();
     }
-
     include("../includes/cerrarConexion.php");
 ?>

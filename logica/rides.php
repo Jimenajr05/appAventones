@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: rides.php (Lógica de Negocio)
     // Descripción: Define la clase **Ride**. Gestiona las
@@ -7,8 +7,7 @@
     // capacidad del vehículo y reglas de costo/horario.
     // Creado por: Jimena y Fernanda.
     // ===================================================== 
--->
-<?php
+
     include_once("../includes/conexion.php");
 
     class Ride {
@@ -27,10 +26,6 @@
         }
 
         private function validarCosto($costo, $dia, $hora) {
-            // Reglas de ejemplo (ajústalas si deseas):
-            // - Costo mínimo base: ₡500
-            // - Fines de semana (Sábado/Domingo): mínimo ₡700
-            // - Horario nocturno (22:00 - 05:59): mínimo ₡800
             $min = 500;
             $dia = trim($dia);
 
@@ -46,10 +41,31 @@
             if ($costo < $min) {
                 throw new Exception("El costo ingresado (₡{$costo}) es menor al mínimo permitido para ese día/horario (₡{$min}).");
             }
+            if ($costo > 30000) {
+                throw new Exception("El costo ingresado excede el máximo permitido (₡30 000).");
+            }
+        }
 
-            // También puedes limitar máximos razonables, p.ej. ₡10 000
-            if ($costo > 10000) {
-                throw new Exception("El costo ingresado excede el máximo permitido (₡10 000).");
+        private function validarRideDuplicado($idChofer, $idVehiculo, $dia, $hora, $idRide = null) {
+            if ($idRide) {
+                // Validación cuando EDITA (excluye su propio ID)
+                $sql = "SELECT id_ride FROM rides 
+                        WHERE id_chofer=? AND id_vehiculo=? AND dia=? AND hora=? AND id_ride <> ?";
+                $stmt = $this->conexion->prepare($sql);
+                $stmt->bind_param("iissi", $idChofer, $idVehiculo, $dia, $hora, $idRide);
+            } else {
+                // Validación cuando CREA
+                $sql = "SELECT id_ride FROM rides 
+                        WHERE id_chofer=? AND id_vehiculo=? AND dia=? AND hora=?";
+                $stmt = $this->conexion->prepare($sql);
+                $stmt->bind_param("iiss", $idChofer, $idVehiculo, $dia, $hora);
+            }
+
+            $stmt->execute();
+            $existe = $stmt->get_result()->fetch_assoc();
+
+            if ($existe) {
+                throw new Exception("⚠️ Ya existe un ride con este vehículo el mismo día y a la misma hora.");
             }
         }
 
@@ -71,7 +87,7 @@
             $dia = $data['dia'];
             $hora = $data['hora'];
 
-            // 1) Validar vehículo y capacidad
+            // Validar vehículo y capacidad
             $veh = $this->obtenerVehiculoDelChofer($idVehiculo, $idChofer);
             if (!$veh) {
                 throw new Exception("Vehículo inválido.");
@@ -86,11 +102,15 @@
                 throw new Exception("No se permiten más de 5 espacios por ride.");
             }
             if ($espacios > (int)$veh['capacidad']) {
-                throw new Exception("Los espacios del ride ($espacios) no pueden exceder la capacidad del vehículo ({$veh['capacidad']}).");
+                throw new Exception("No puedes solicitar $espacios espacios para este ride, ya que la capacidad máxima del vehículo es de {$veh['capacidad']} espacios.");
             }
 
-            // 2) Validar costo con reglas
+            // Validar costo con reglas
             $this->validarCosto($costo, $dia, $hora);
+
+            // Validar ride duplicado ANTES DE GUARDAR
+            $idRide = $data['id_ride'] ?? null;
+            $this->validarRideDuplicado($idChofer, $idVehiculo, $dia, $hora, $idRide);
 
             if (empty($data['id_ride'])) {
                 $sql = "INSERT INTO rides (id_chofer, id_vehiculo, nombre, inicio, fin, hora, dia, costo, espacios)
@@ -127,7 +147,15 @@
                     $idChofer
                 );
             }
-            return $stmt->execute();
+            // Manejo de ejecución y errores MySQL
+            if (!$stmt->execute()) {
+                if ($stmt->errno == 1062) {
+                    throw new Exception("⚠️ Ya existe un ride con este vehículo el mismo día y a la misma hora.");
+                }
+                throw new Exception("Error al guardar el ride: " . $stmt->error);
+            }
+
+            return true;
         }
 
         public function obtenerRide($idRide, $idChofer) {

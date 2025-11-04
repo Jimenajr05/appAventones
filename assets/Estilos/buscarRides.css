@@ -1,3 +1,4 @@
+/* ======== ESTILO GLOBAL ======== */
 html,
 body {
   height: 100%;
@@ -5,7 +6,6 @@ body {
   flex-direction: column;
 }
 
-/* ======== RESETEO Y FUENTE ======== */
 body {
   font-family: "Segoe UI", Arial, sans-serif;
   background-color: #f4f7f8;
@@ -99,6 +99,7 @@ body {
   object-fit: cover;
 }
 
+/* ========BOTÓN SALIR ======== */
 .logout-btn {
   background-color: #007bff;
   color: white;
@@ -113,9 +114,9 @@ body {
   background-color: #0056b3;
 }
 
-/* ================= BOTÓN SALIR ================= */
-.logout-btn {
-  background-color: #007bff;
+/* ======== BOTÓN EDITAR PERFIL ========*/
+.edit-btn {
+  background-color: #109686;
   color: white;
   padding: 6px 12px;
   border-radius: 6px;
@@ -124,14 +125,14 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.logout-btn:hover {
-  background-color: #0056b3;
+.edit-btn:hover {
+  background-color: #0B3D2E;
 }
 
-/* ================= CONTENEDOR ================= */
+/* ======== CONTENEDOR ======== */
 .container {
   width: 90%;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 30px auto;
   background: white;
   padding: 20px;
@@ -140,7 +141,7 @@ body {
   flex: 1;
 }
 
-/* ================= FORMULARIO DE BÚSQUEDA ================= */
+/* ======== FORMULARIO DE BÚSQUEDA ======== */
 form.busqueda {
   display: flex;
   flex-wrap: wrap;
@@ -174,7 +175,6 @@ form input[type="submit"]:hover {
 
 form input[type="button"] {
   background-color: #28a745;
-  /* Verde */
   color: white;
   border: none;
   padding: 8px 15px;
@@ -187,8 +187,7 @@ form input[type="button"]:hover {
   background-color: #1e7e34;
 }
 
-/* ================= TABLAS ================= */
-
+/* ======== TABLAS ======== */
 .table-container {
   margin-top: 30px;
   border-radius: 10px;
@@ -231,27 +230,27 @@ tr:hover td {
   transition: background-color 0.3s ease;
 }
 
-/* ================= BOTÓN RESERVAR ================= */
+/* ======== BOTÓN RESERVAR ======== */
 .btn-reservar {
   display: inline-block;
-  background-color: #007bff;
+  background-color: #109686;
   color: #fff;
   padding: 7px 14px;
-  border-radius: 6px;
+  border-radius: 25px;
   text-decoration: none;
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
 
 .btn-reservar:hover {
-  background-color: #0c6f63;
+  background-color: #063125;
 }
 
 .btn-reservar:active {
-  background-color: #0a5c52;
+  background-color: #063125;
 }
 
-/* ================= FOOTER ================= */
+/* ======== FOOTER ======== */
 footer {
   text-align: center;
   background: linear-gradient(90deg, #063125, #109686);
@@ -269,9 +268,7 @@ footer p {
   opacity: 0.95;
 }
 
-/* ============================================================
-   ALERTAS DE MENSAJE
-============================================================ */
+/* ======== ALERTAS DE MENSAJE ======== */
 .alert {
   text-align: center;
   font-weight: 600;
@@ -296,16 +293,14 @@ footer p {
   border: 1px solid #f5c6cb;
 }
 
-/* ============================================================
-   MAPA LEAFLET (Buscar Rides)
-============================================================ */
+/* ======== MAPA LEAFLET ========*/
 
 #map {
   height: 350px;
   width: 100%;
   border-radius: 10px;
   margin-top: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 #map-hint {
@@ -319,7 +314,7 @@ footer p {
   border: 1px solid #bae6fd;
 }
 
-/* Mensaje error mapa */
+/* ======== MENSAJE DE ERROR DEL MAPA ======== */
 .map-error {
   background: #fee !important;
   color: #b91c1c !important;

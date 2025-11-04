@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: enviarCorreo.php
     // Descripción: Contiene funciones para el envío de correos
@@ -7,8 +7,7 @@
     // para enviar correos de activación de cuenta.
     // Creado por: Jimena y Fernanda.
     // =====================================================
--->
-<?php
+
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
 
@@ -30,8 +29,8 @@
             $mail->Port       = 587;
             
             // Habilitar debug SMTP si hay problemas
-            $mail->SMTPDebug = 2; // 0 = off, 1 = client messages, 2 = client and server messages
-            $mail->Debugoutput = 'error_log'; // Escribir debug al error_log
+            $mail->SMTPDebug = 2;
+            $mail->Debugoutput = 'error_log'; 
 
             // Remitente y destinatario
             $mail->setFrom('mariajimenajr14@gmail.com', 'Aventones');
@@ -39,7 +38,7 @@
 
             // Contenido del correo
             $mail->isHTML(true);
-            $mail->CharSet = 'UTF-8'; // Importante para caracteres especiales
+            $mail->CharSet = 'UTF-8'; 
             $mail->Subject = 'Bienvenido a Aventones - Activa tu cuenta';
             
             // URL para el entorno de desarrollo
@@ -51,7 +50,6 @@
             
             // Log para debugging
             error_log("URL de activación generada: " . $enlace);
-
 
             $mail->Body = "
                 <div style='font-family: Arial, sans-serif; text-align: center;'>

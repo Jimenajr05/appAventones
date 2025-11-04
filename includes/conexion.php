@@ -1,12 +1,11 @@
-<!--
+<?php
     // =====================================================
     // Script: conexion.php
     // Descripción: Establece la conexión con la base de datos 'aventones'.
     // En caso de fallo, detiene la ejecución y muestra un error.
     // By: Jimena y Fernanda
     // =====================================================
--->
-<?php
+
     $servidor = "localhost";
     $usuario = "root";
     $clave = "";

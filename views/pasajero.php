@@ -1,4 +1,4 @@
-<!--
+<?php 
     // =====================================================
     // Script: pasajero.php
     // Descripción: **Panel principal** del Pasajero. Actúa
@@ -6,8 +6,7 @@
     // a **Mis Reservas**.
     // Creado por: Jimena y Fernanda.
     // =====================================================
--->
-<?php 
+
     session_start();
     include("../includes/conexion.php");
 
@@ -18,8 +17,22 @@
 
     $idPasajero = $_SESSION['id_usuario'];
     $mensaje = $_GET['msg'] ?? "";
-    $fotoUsuario = $_SESSION['foto'] ?? "../assets/Estilos/Imagenes/default-user.png";
+    
+     // Foto de usuario del sistema
+    if (!empty($_SESSION['foto'])) {
+        // Si ya trae "uploads/" entonces la ruta es correcta
+        if (str_starts_with($_SESSION['foto'], 'uploads/')) {
+            $fotoUsuario = "../" . $_SESSION['foto'] . "?v=" . time();
+        } else {
+            // Compatibilidad con fotos antiguas
+            $fotoUsuario = "../assets/Estilos/Imagenes/" . $_SESSION['foto'] . "?v=" . time();
+        }
+    } else {
+        // Default
+        $fotoUsuario = "../assets/Estilos/Imagenes/default-user.png";
+    }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -28,14 +41,14 @@
         <link rel="stylesheet" href="../assets/Estilos/pasajero.css">
     </head>
     <body>
-        <!-- 🟢 HEADER PRINCIPAL -->
+        <!-- HEADER PRINCIPAL -->
         <header class="header-pasajero">
         <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
         <h1>Bienvenido a <span class="resaltado">Aventones.com</span></h1>
         <h2>Tu mejor opción para viajar seguros</h2>
         </header>
 
-        <!-- ⚪ TOOLBAR -->
+        <!-- TOOLBAR -->
         <nav class="toolbar">
             <div class="toolbar-left">
                 <a href="pasajero.php" class="nav-link active">Panel de Pasajero</a>
@@ -45,6 +58,7 @@
             <div class="toolbar-right">
                 <span class="user-name">Hola, <?= htmlspecialchars($_SESSION['nombre']); ?></span>
                 <img src="<?= htmlspecialchars($fotoUsuario); ?>" class="user-photo" alt="Usuario">
+                <a href="editarPerfil.php" class="edit-btn">Editar Perfil</a>
                 <a href="../logica/cerrarSesion.php" class="logout-btn">Salir</a>
             </div>
         </nav>

@@ -8,7 +8,7 @@ body {
 
 /* ======== HEADER ======== */
 header {
-    background: linear-gradient(90deg,#063125, #109686);
+    background: linear-gradient(90deg, #063125, #109686);
     color: #fff;
     text-align: center;
     padding: 25px 0;
@@ -18,7 +18,7 @@ header {
 header img {
     display: block;
     margin: 0 auto 10px;
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
 header h1 {
@@ -48,7 +48,7 @@ header .resaltado {
     background-color: #ffffff;
     border-bottom: 2px solid #cbe3e7;
     padding: 12px 40px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .toolbar-left {
@@ -62,6 +62,7 @@ header .resaltado {
     align-items: center;
     gap: 15px;
 }
+
 .user-name {
     color: #0B3D2E;
     font-weight: 600;
@@ -89,12 +90,24 @@ header .resaltado {
     background-color: #0056b3;
 }
 
+.edit-btn {
+    background-color: #109686;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease;
+}
 
-/* ======== CONTENEDOR PRINCIPAL - CORREGIDO ======== */
+.edit-btn:hover {
+    background-color: #0B3D2E;
+}
+
+/* ======== CONTENEDOR PRINCIPAL ======== */
 .container {
-    /* ANTES: width: 200%; max-width: 1000px; */
-    width: auto; 
-    max-width: 1200px; /* Aumentamos el ancho para que quepa la tabla */
+    width: auto;
+    max-width: 1200px;
     margin: 40px auto;
     background: #fff;
     padding: 25px;
@@ -108,57 +121,56 @@ header .resaltado {
     margin-bottom: 20px;
 }
 
-/* ======== TABLA - CORREGIDA ======== */
+/* ======== TABLA ======== */
 
 .table-container {
-  margin-top: 30px;
-  border-radius: 10px;
-  overflow-x: auto;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    margin-top: 30px;
+    border-radius: 10px;
+    overflow-x: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-  font-size: 0.95rem;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 0.95rem;
 }
 
 thead {
-  background: linear-gradient(90deg, #063125, #109686);
-  color: white;
+    background: linear-gradient(90deg, #063125, #109686);
+    color: white;
 }
 
 th,
 td {
-  padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 tr:nth-child(even) {
-  background-color: #f9f9f9;
+    background-color: #f9f9f9;
 }
 
 tr:hover td {
-  background-color: #eaf4f1;
+    background-color: #eaf4f1;
 }
 
-/* Ajustes de ancho para las columnas problemáticas */
-table td:nth-child(2), /* Nombre */
+table td:nth-child(2),
 table th:nth-child(2) {
     min-width: 150px;
 }
 
-table td:nth-child(3), /* Correo */
+table td:nth-child(3),
 table th:nth-child(3) {
     min-width: 250px;
     text-align: left;
 }
 
-table td:last-child, /* Acciones (Botones) */
+table td:last-child,
 table th:last-child {
-    min-width: 150px; /* Suficiente para el botón */
-    white-space: nowrap; /* Evita que el botón se parta en varias líneas */
+    min-width: 150px;
+    white-space: nowrap;
 }
 
 .estado.activo {
@@ -174,7 +186,7 @@ table th:last-child {
 /* ======== BOTONES ======== */
 .btn {
     padding: 8px 14px;
-    border-radius: 5px;
+    border-radius: 25px;
     text-decoration: none;
     color: white;
     font-weight: bold;
@@ -182,56 +194,62 @@ table th:last-child {
     cursor: pointer;
 }
 
-.btn-green { background-color: #28a745; }
-.btn-green:hover { background-color: #1e7e34; }
+.btn-green {
+    background-color: #28a745;
+}
 
-.btn-red { background-color: #e53935; }
-.btn-red:hover { background-color: #c62828; }
+.btn-green:hover {
+    background-color: #1e7e34;
+}
+
+.btn-red {
+    background-color: #e53935;
+}
+
+.btn-red:hover {
+    background-color: #c62828;
+}
 
 .btn-blue {
     background-color: #007bff;
 }
+
 .btn-blue:hover {
     background-color: #0056b3;
 }
 
-/* ======== FORMULARIO NUEVO ADMIN - CORREGIDO ======== */
-
-/* Centrar y limitar el ancho del formulario */
+/* ======== FORMULARIO ======== */
 .container form {
-    /* Tu HTML no tiene la clase .form-admin, así que apuntamos a la etiqueta form */
-    max-width: 500px; 
+    width: 100%;
+    max-width: 800px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
-/* El estilo de los inputs debe ser 100% del ancho del formulario centrado */
 .container form label {
     width: 100%;
     margin-top: 5px;
     font-weight: bold;
 }
 
-.container form input:not([type="submit"]):not([type="file"]), 
+.container form input:not([type="submit"]):not([type="file"]),
 .container form select {
-    width: 100%; 
+    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    box-sizing: border-box; /* Fundamental para el cálculo de ancho */
+    box-sizing: border-box;
 }
 
-/* Tu estilo original de .form-admin que no se estaba usando, lo mantenemos por si acaso */
-.form-admin { 
+.form-admin {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
 }
 
-/* Estilo para el botón de Submit */
 .container form input[type="submit"] {
     width: 100%;
     margin-top: 20px;
@@ -239,14 +257,12 @@ table th:last-child {
     font-size: 1rem;
 }
 
-/* Quitar borde y outline del botón */
 input[type="submit"],
 .btn {
-    border: none;          /* elimina el borde negro */
-    outline: none;         /* elimina el borde al enfocar */
+    border: none;
+    outline: none;
 }
 
-/* Evitar que el outline vuelva a aparecer al hacer clic */
 input[type="submit"]:focus,
 .btn:focus {
     outline: none;
@@ -258,8 +274,30 @@ input[type="submit"]:focus,
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
 }
 
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
 
-/* El mensaje de error/éxito */
+.form-row label {
+    width: 100px; 
+    text-align: left; 
+    font-weight: bold;
+}
+
+.form-row input,
+.form-row select {
+    width: 100%;
+    max-width: 400px; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+/* ======== MENSAJE ======== */
 .mensaje {
     text-align: center;
     margin-top: 15px;
@@ -272,18 +310,18 @@ input[type="submit"]:focus,
 
 /* ======== FOOTER ======== */
 footer {
-  text-align: center;
-  background: linear-gradient(90deg, #063125, #109686);
-  color: white;
-  padding: 20px 0;
-  font-size: 0.9rem;
-  margin-top: 100px;
-  border-top: 3px solid #054733;
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    background: linear-gradient(90deg, #063125, #109686);
+    color: white;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    margin-top: 100px;
+    border-top: 3px solid #054733;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
 }
 
 footer p {
-  margin: 0;
-  letter-spacing: 0.3px;
-  opacity: 0.95;
+    margin: 0;
+    letter-spacing: 0.3px;
+    opacity: 0.95;
 }

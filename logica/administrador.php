@@ -1,12 +1,11 @@
-<!--
+<?php
     // =====================================================
     // Script: administrador.php
     // Descripción: Lógica del **Administrador**. Gestiona usuarios
     // (listar, activar/desactivar) y crea nuevos administradores.
     // Creado por: Jimena y Fernanda.
     // =====================================================
--->
-<?php
+
     include_once("../includes/conexion.php");
 
     class Administrador {
@@ -16,7 +15,7 @@
             $this->conexion = $conexion;
         }
 
-        // 📋 Obtener usuarios
+        // Obtener usuarios
         public function obtenerUsuarios() {
             $sql = "SELECT id_usuario, nombre, apellido, correo, tipo, estado, fecha_registro 
                     FROM usuarios ORDER BY fecha_registro DESC";
@@ -30,13 +29,13 @@
             return $usuarios;
         }
 
-        // 🔄 Cambiar estado (activar/desactivar)
+        // Cambiar estado (activar/desactivar)
         public function cambiarEstado($id, $nuevoEstado) {
             $sql = "UPDATE usuarios SET estado='$nuevoEstado' WHERE id_usuario='$id'";
             return mysqli_query($this->conexion, $sql);
         }
 
-        // 🧍 Crear nuevo administrador
+        // Crear nuevo administrador
         public function crearAdministrador($nombre, $apellido, $cedula, $fecha_nacimiento, $correo, $telefono, $contrasena, $fotografia = null) {
             // Validar duplicado
             $verificar = "SELECT id_usuario FROM usuarios WHERE correo='$correo' OR cedula='$cedula'";
@@ -45,7 +44,7 @@
                 return false;
             }
 
-            // 🔒 Encriptar contraseña correctamente
+            // Encriptar contraseña correctamente
             $contrasenaHash = password_hash($contrasena, PASSWORD_DEFAULT);
 
             $sql = "INSERT INTO usuarios 
@@ -55,7 +54,7 @@
             return mysqli_query($this->conexion, $sql);
         }
         
-        // 📦 Procesar formulario del nuevo administrador
+        // Procesar formulario del nuevo administrador
         public function procesarNuevoAdministrador($post, $files) {
             session_start();
 
@@ -74,9 +73,7 @@
                 exit;
             }
 
-            // =============================
-            // 📸 Manejo de fotografía (igual al registro común)
-            // =============================
+            // Manejo de fotografía (igual al registro común)
             $rutaFoto = "";
             if (isset($files['fotografia']) && $files['fotografia']['error'] === 0) {
                 $ext = strtolower(pathinfo($files['fotografia']['name'], PATHINFO_EXTENSION));
@@ -93,7 +90,7 @@
                     exit;
                 }
 
-                // 📁 Carpeta igual que el registro común
+                // Carpeta igual que el registro común
                 $directorio = "../uploads/usuarios/";
                 if (!is_dir($directorio)) {
                     mkdir($directorio, 0777, true);
@@ -111,9 +108,7 @@
                 }
             }
 
-            // =============================
-            // 💾 Crear en base de datos
-            // =============================
+            // Crear en base de datos
             if ($this->crearAdministrador($nombre, $apellido, $cedula, $fecha_nacimiento, $correo, $telefono, $contrasena, $rutaFoto)) {
                 $_SESSION['mensaje'] = "✅ Administrador creado correctamente.";
             } else {
@@ -122,7 +117,6 @@
 
             header("Location: ../views/administrador.php");
             exit;
-        }
-        
+        } 
     }
 ?>

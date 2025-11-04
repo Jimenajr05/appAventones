@@ -1,14 +1,13 @@
-<!--
-// =====================================================
-// Script: reservas.php (Lógica)
-// Descripción: Lógica **CRUD central** para **Reservas**.
-// Maneja **Crear (pasajero)**, **Cancelar (pasajero)**, y
-// **Aceptar/Rechazar (chofer)**, incluyendo chequeo de
-// espacios y autorización.
-// Creado por: Jimena y Fernanda.
-// =====================================================
--->
 <?php
+    // =====================================================
+    // Script: reservas.php (Lógica)
+    // Descripción: Lógica **CRUD central** para **Reservas**.
+    // Maneja **Crear (pasajero)**, **Cancelar (pasajero)**, y
+    // **Aceptar/Rechazar (chofer)**, incluyendo chequeo de
+    // espacios y autorización.
+    // Creado por: Jimena y Fernanda.
+    // =====================================================
+
     session_start();
     include("../includes/conexion.php");
 
@@ -35,9 +34,6 @@
 
     // Función para verificar espacios disponibles
     function hayEspaciosDisponibles($conexion, $idRide) {
-        // Calcular la cantidad de espacios disponibles restando las reservas
-        // pendientes/aceptadas. Usamos SUM(CASE ...) y COALESCE para que cuando
-        // no haya filas de reservas el cálculo devuelva el total de espacios.
         $sql = "SELECT r.espacios - COALESCE(SUM(CASE WHEN res.estado IN ('pendiente','aceptada') THEN 1 ELSE 0 END), 0) AS disponibles
                 FROM rides r
                 LEFT JOIN reservas res ON r.id_ride = res.id_ride
@@ -52,7 +48,7 @@
     }
 
     switch ($accion) {
-        // 🧩 CREAR RESERVA
+        // Crear Reserva (solo pasajero)
         case "crear":
             if ($tipo !== 'pasajero') {
                 header("Location: ../views/dashboard.php?error=No autorizado");
@@ -71,7 +67,7 @@
             mysqli_stmt_store_result($stmt);
             
             if (mysqli_stmt_num_rows($stmt) > 0) {
-                header("Location: ../views/buscarRides.php?error=Ya tienes una reserva para este ride");
+                header("Location: ../views/buscarRides.php?error=Ya tienes una reserva para este ride.");
                 exit;
             }
             
@@ -89,7 +85,7 @@
             header("Location: ../views/pasajero.php?msg=Reserva enviada con éxito");
             break;
 
-        // ❌ CANCELAR RESERVA (solo pasajero)
+        // Cancelar reserva (solo pasajero)
         case "cancelar":
             if ($tipo !== 'pasajero') {
                 header("Location: ../views/dashboard.php?error=No autorizado");
@@ -108,7 +104,7 @@
             header("Location: ../views/pasajero.php?msg=Reserva cancelada");
             break;
 
-        // ✅ ACEPTAR RESERVA (solo chofer)
+        // Aceptar reserva (solo chofer)
         case "aceptar":
             if ($tipo !== 'chofer') {
                 header("Location: ../views/dashboard.php?error=No autorizado");
@@ -132,7 +128,7 @@
             header("Location: ../views/choferReservas.php?msg=Reserva aceptada");
             break;
 
-        // 🚫 RECHAZAR RESERVA (solo chofer)
+        // Rechazar reserva (solo chofer)
         case "rechazar":
             if ($tipo !== 'chofer') {
                 header("Location: ../views/dashboard.php?error=No autorizado");
@@ -153,7 +149,7 @@
                 WHERE id_reserva = ? AND estado = 'pendiente'");
             mysqli_stmt_bind_param($stmt, "i", $idReserva);
             mysqli_stmt_execute($stmt);
-            header("Location: ../views/chofer_reservas.php?msg=Reserva rechazada");
+            header("Location: ../views/choferReservas.php?msg=Reserva rechazada");
             break;
 
         default:

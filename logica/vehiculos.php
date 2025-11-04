@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: vehiculos.php (Lógica)
     // Descripción: **Controlador CRUD de Vehículos**. Gestiona
@@ -6,13 +6,11 @@
     // de un Chofer, incluyendo el manejo de la **fotografía**.
     // Creado por: Fernanda y Jimena.
     // =====================================================
--->
 
-<?php
     session_start();
     include("../includes/conexion.php");
 
-    // 🔒 Seguridad: solo chofer
+    // Seguridad: solo chofer
     if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
         header("Location: ../views/login.php");
         exit;
@@ -22,12 +20,10 @@
     $accion = $_GET['accion'] ?? '';
     $mensaje = "";
 
-    /* ============================================================
-    🧩 CREAR O ACTUALIZAR VEHÍCULO
-    ============================================================ */
+    // Crear o editar Vehículo
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-        // 🔹 Sanitización básica
+        // Sanitización básica
         $marca = trim($_POST['marca'] ?? '');
         $modelo = trim($_POST['modelo'] ?? '');
         $placa = trim($_POST['placa'] ?? '');
@@ -35,7 +31,7 @@
         $anno = (int)($_POST['anno'] ?? 0);
         $capacidad = (int)($_POST['capacidad'] ?? 0);
         
-        // 🔹 Validar color permitido (asumo que tienes esta lógica)
+        // Validar color permitido (asumo que tienes esta lógica)
         $coloresPermitidos = [
             "Blanco","Negro","Gris","Plata","Azul","Rojo","Verde",
             "Amarillo","Naranja","Café","Beige","Vino","Turquesa","Morado"
@@ -46,7 +42,7 @@
             exit;
         }
 
-        // 🛑 MANEJO DE ARCHIVO: Generar la ruta para la base de datos
+        // MANEJO DE ARCHIVO: Generar la ruta para la base de datos
         $foto_ruta = null;
         $directorio_destino = "../uploads/vehiculos/"; 
         
@@ -70,11 +66,9 @@
             }
         }
 
-        // ============================================================
-        // 💾 Insertar o actualizar
-        // ============================================================
+        // Insertar o actualizar
         if (!empty($_POST['id_vehiculo'])) {
-            // 🧾 Actualizar vehículo existente
+            // Actualizar vehículo existente
             $idVehiculo = (int)$_POST['id_vehiculo'];
             $ok = false;
 
@@ -84,7 +78,6 @@
                         SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=?, fotografia=? 
                         WHERE id_vehiculo=? AND id_chofer=?";
                 $stmt = $conexion->prepare($sql);
-                // CORREGIDO: ssssiisii (4 strings, 2 int, 1 string, 2 int)
                 $stmt->bind_param("ssssiisii",
                     $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta, $idVehiculo, $idChofer
                 );
@@ -94,7 +87,6 @@
                         SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=? 
                         WHERE id_vehiculo=? AND id_chofer=?";
                 $stmt = $conexion->prepare($sql);
-                // CORREGIDO: ssssiiii (4 strings, 2 int, 2 int)
                 $stmt->bind_param("ssssiiii",
                     $marca, $modelo, $placa, $color, $anno, $capacidad, $idVehiculo, $idChofer
                 );
@@ -106,11 +98,10 @@
             $mensaje = $ok ? "Vehículo actualizado correctamente." : "Error al actualizar vehículo: " . $conexion->error;
 
         } else {
-            // 🆕 Insertar nuevo vehículo
+            // Insertar nuevo vehículo
             $sql = "INSERT INTO vehiculos (id_chofer, marca, modelo, placa, color, anno, capacidad, fotografia)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conexion->prepare($sql);
-            // CORRECTO: issssiss (1 int, 4 strings, 2 int, 1 string)
             $stmt->bind_param("issssiss", 
                 $idChofer, $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta
             );
@@ -123,13 +114,11 @@
         exit;
     }
 
-    /* ============================================================
-    ❌ ELIMINAR VEHÍCULO
-    ============================================================ */
+    // Eliminar vehículo
     if ($accion === "eliminar" && isset($_GET['id'])) {
         $id = (int)$_GET['id'];
         
-        // 📝 Opcional: Obtener la ruta de la imagen para eliminarla del servidor
+        // Opcional: Obtener la ruta de la imagen para eliminarla del servidor
         $sqlSelect = "SELECT fotografia FROM vehiculos WHERE id_vehiculo=? AND id_chofer=?";
         $stmtSelect = $conexion->prepare($sqlSelect);
         $stmtSelect->bind_param("ii", $id, $idChofer);
@@ -158,8 +147,4 @@
 
     // Si llega aquí sin POST o GET válido, redirige
     header("Location: ../views/chofer.php");
-
-
-
-
 ?>

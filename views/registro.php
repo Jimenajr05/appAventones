@@ -76,22 +76,9 @@
             
         </section>
 
-<<<<<<< HEAD:views/registro.php
-        <p>¿Ya eres usuario? <a href="login.php">Inicia sesión aquí</a></p>
-    </form>
-    
-</section>
-
-<footer>
-    <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
-</footer>
+    <footer>
+        <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
+    </footer>
 
 </body>
 </html>
-=======
-        <footer>
-            <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
-        </footer>
-    </body>
-</html>
->>>>>>> 78eea70 (Octavo commit del proyecto appAventones):views/Registro.php

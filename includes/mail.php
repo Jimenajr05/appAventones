@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: mail.php
     // Descripción: Define la clase EmailService para gestionar
@@ -6,9 +6,8 @@
     // reserva) utilizando la librería PHPMailer. Incluye la
     // configuración de conexión SMTP.
     // Creado por: Jimena y Fernanda
-    // =====================================================
--->
-<?php
+    // ===================================================== 
+
     require __DIR__ . '/../phpmailer/src/PHPMailer.php';
     require __DIR__ . '/../phpmailer/src/SMTP.php';
     require __DIR__ . '/../phpmailer/src/Exception.php';
@@ -23,12 +22,11 @@
         public function __construct() {
             $this->mailer = new PHPMailer(true);
 
-            // 🔧 Configuración SMTP (Gmail)
             $this->mailer->isSMTP();
             $this->mailer->Host = 'smtp.gmail.com';
             $this->mailer->SMTPAuth = true;
-            $this->mailer->Username = 'mariajimenajr14@gmail.com'; // cambia esto
-            $this->mailer->Password = 'xwhw dkjw uuki qmpm';  // contraseña de aplicación, NO la normal
+            $this->mailer->Username = 'mariajimenajr14@gmail.com'; 
+            $this->mailer->Password = 'xwhw dkjw uuki qmpm'; 
             $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $this->mailer->Port = 587;
             $this->mailer->CharSet = 'UTF-8';

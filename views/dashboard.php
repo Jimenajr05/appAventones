@@ -1,4 +1,4 @@
-<!--
+<?php
     // =====================================================
     // Script: dashboard.php
     // Descripción: **Redirecciona** al usuario a su panel
@@ -6,8 +6,7 @@
     // basándose en el tipo de sesión activa.
     // Creado por: Jimena y Fernanda.
     // =====================================================
--->
-<?php
+
     session_start();
     if (!isset($_SESSION['tipo'])) {
         header("Location: login.php");

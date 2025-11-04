@@ -1,90 +1,76 @@
-<!--
-    // =====================================================
-    // Script: buscarRides.php (Lógica)
-    // Descripción: **Controlador de Búsqueda**. Procesa filtros
-    // (GET), ejecuta la consulta principal de rides y guarda
-    // los **resultados en sesión** para la vista.
-    // Creado por: Fernanda y Jimena.
-    // =====================================================
--->
 <?php
-session_start();
-include("../includes/conexion.php");
+// =====================================================
+// Lógica: BuscarRide.php
+// Retorna lista de rides filtrada para el pasajero
+// =====================================================
 
-// Variables para búsqueda
-$origen = isset($_GET['origen']) ? trim($_GET['origen']) : '';
-$destino = isset($_GET['destino']) ? trim($_GET['destino']) : '';
-$ordenar = isset($_GET['ordenar']) ? $_GET['ordenar'] : 'fecha';
-$direccion = isset($_GET['direccion']) ? $_GET['direccion'] : 'ASC';
+class BuscarRide
+{
+    private $conexion;
 
-// Columnas válidas para ordenar
-$columnas = [
-    'fecha' => 'r.dia',
-    'origen' => 'r.inicio',
-    'destino' => 'r.fin'
-];
+    public function __construct($conexion)
+    {
+        $this->conexion = $conexion;
+    }
 
-$columnaOrden = isset($columnas[$ordenar]) ? $columnas[$ordenar] : 'r.dia';
-$direccionOrden = ($direccion === 'DESC') ? 'DESC' : 'ASC';
+    public function buscar($origen, $destino, $ordenar, $direccion)
+    {
+        $permitidos = ['fecha', 'origen', 'destino', 'costo', 'espacios'];
+        if (!in_array($ordenar, $permitidos, true)) $ordenar = 'fecha';
+        $direccion = strtoupper($direccion) === 'DESC' ? 'DESC' : 'ASC';
 
-// Consulta principal con JOIN
-$sql = "SELECT 
-            r.id_ride,
-            r.inicio,
-            r.fin,
-            r.dia,
-            r.hora,
-            r.costo,
-            r.espacios,
+        $sql = "SELECT r.*, 
+                       v.marca, v.modelo, v.anno, v.placa, v.fotografia AS foto_vehiculo,
+                       u.nombre AS nombre_chofer, u.fotografia AS foto_chofer
+                FROM rides r
+                JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo
+                JOIN usuarios u ON r.id_chofer = u.id_usuario
+                WHERE 1=1";
 
-            v.marca,
-            v.modelo,
-            v.placa,
-            v.anno,
-            v.fotografia AS foto_vehiculo,
+        $params = [];
+        $types  = "";
 
-            u.nombre AS nombre_chofer,
-            u.apellido AS apellido_chofer,
-            u.fotografia AS foto_chofer
-        FROM rides r
-        JOIN vehiculos v ON r.id_vehiculo = v.id_vehiculo
-        JOIN usuarios u ON r.id_chofer = u.id_usuario
-        WHERE 1=1";
-
-
-// Filtros
-if (!empty($origen)) {
-    $sql .= " AND r.inicio LIKE '%" . mysqli_real_escape_string($conexion, $origen) . "%'";
-}
-if (!empty($destino)) {
-    $sql .= " AND r.fin LIKE '%" . mysqli_real_escape_string($conexion, $destino) . "%'";
-}
-
-$sql .= " ORDER BY $columnaOrden $direccionOrden";
-
-$resultado = mysqli_query($conexion, $sql);
-$rides = [];
-
-if ($resultado && mysqli_num_rows($resultado) > 0) {
-    while ($row = mysqli_fetch_assoc($resultado)) {
-        // Asegurar rutas de imagen
-        if (empty($row['foto_chofer'])) {
-            $row['foto_chofer'] = "uploads/usuarios/default-user.png";
+        if ($origen !== "") {
+            $sql .= " AND r.inicio LIKE ?";
+            $params[] = "%$origen%";
+            $types   .= "s";
         }
-        if (empty($row['foto_vehiculo'])) {
-            $row['foto_vehiculo'] = "uploads/vehiculos/default-car.png";
+        if ($destino !== "") {
+            $sql .= " AND r.fin LIKE ?";
+            $params[] = "%$destino%";
+            $types   .= "s";
         }
 
-        $rides[] = $row;
+        $ordenDia = "FIELD(r.dia,
+            'Lunes','Martes','Miércoles','Miercoles','Jueves','Viernes','Sábado','Sabado','Domingo'
+        )";
+
+        $ordenHora = "STR_TO_DATE(r.hora, '%H:%i:%s')";
+
+        switch ($ordenar) {
+            case 'origen': 
+                $sql .= " ORDER BY r.inicio $direccion"; 
+                break;
+            case 'destino': 
+                $sql .= " ORDER BY r.fin $direccion"; 
+                break;
+            case 'costo': 
+                $sql .= " ORDER BY r.costo $direccion"; 
+                break;
+            case 'espacios': 
+                $sql .= " ORDER BY r.espacios $direccion"; 
+                break;
+            default:
+                $sql .= " ORDER BY $ordenDia $direccion, $ordenHora $direccion";
+                break;
+        }
+
+        $stmt = $this->conexion->prepare($sql);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
-
-include("../includes/cerrarConexion.php");
-
-// Enviar array de rides a la vista
-$_SESSION['rides_data'] = $rides;
-
-// Redirigir de vuelta a la vista
-header("Location: ../views/buscarRides.php");
-exit;
-?>
