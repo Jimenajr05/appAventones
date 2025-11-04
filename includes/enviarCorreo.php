@@ -15,6 +15,7 @@
     require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
     require __DIR__ . '/../PHPMailer/src/SMTP.php';
 
+    // Función para enviar correo de activación de cuenta
     function enviarCorreoActivacion($correoDestino, $nombre, $token) {
         $mail = new PHPMailer(true);
 
@@ -51,6 +52,7 @@
             // Log para debugging
             error_log("URL de activación generada: " . $enlace);
 
+            // Cuerpo del correo
             $mail->Body = "
                 <div style='font-family: Arial, sans-serif; text-align: center;'>
                     <h2>¡Bienvenido a Aventones, $nombre!</h2>
@@ -72,6 +74,5 @@
             error_log("Error enviando correo: {$mail->ErrorInfo}");
             return false;
         }
-        
     }
 ?>

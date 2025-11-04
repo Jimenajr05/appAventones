@@ -1,8 +1,8 @@
 <?php
 // =====================================================
-// LOGICA: ChoferReservas.php
-// Lista reservas de los rides del chofer
-// Creado por: Jimena y Fernanda.
+// Lógica: ChoferReservas.php
+// Descripción: Clase para manejar las reservas de los choferes.
+// Creado por: Jimena Jara y Fernanda Sibaja.
 // =====================================================
 
 class ChoferReservas {
@@ -11,7 +11,8 @@ class ChoferReservas {
     public function __construct($conexion) {
         $this->conexion = $conexion;
     }
-
+    
+    // Obtener reservas asociadas al chofer
     public function obtenerReservas($idChofer) {
         $sql = "SELECT r.id_reserva, r.estado, r.fecha_reserva,
                        u.nombre AS pasajero,

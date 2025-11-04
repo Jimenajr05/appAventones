@@ -1,11 +1,9 @@
 <?php
     // =====================================================
-    // Script: reservas.php (Lógica)
-    // Descripción: Lógica **CRUD central** para **Reservas**.
-    // Maneja **Crear (pasajero)**, **Cancelar (pasajero)**, y
-    // **Aceptar/Rechazar (chofer)**, incluyendo chequeo de
-    // espacios y autorización.
-    // Creado por: Jimena y Fernanda.
+    // Lógica: reservas.php 
+    // Descripción: Maneja la creación, cancelación, 
+    // aceptación y rechazo de reservas de rides.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     session_start();
@@ -16,6 +14,7 @@
         exit;
     }
 
+    // Obtener datos de sesión
     $idUsuario = $_SESSION['id_usuario'];
     $tipo = $_SESSION['tipo'];
     $accion = $_GET['accion'] ?? '';
@@ -47,6 +46,7 @@
         return ($row && intval($row['disponibles']) > 0);
     }
 
+    // Manejar acciones
     switch ($accion) {
         // Crear Reserva (solo pasajero)
         case "crear":
@@ -66,6 +66,7 @@
             mysqli_stmt_execute($stmt);
             mysqli_stmt_store_result($stmt);
             
+            // Si ya existe una reserva, redirigir con error
             if (mysqli_stmt_num_rows($stmt) > 0) {
                 header("Location: ../views/buscarRides.php?error=Ya tienes una reserva para este ride.");
                 exit;
@@ -92,6 +93,7 @@
                 exit;
             }
             
+            // Obtener id de reserva
             $idReserva = $_GET['id'] ?? 0;
             $stmt = mysqli_prepare($conexion, 
                 "UPDATE reservas 
@@ -118,7 +120,7 @@
                 header("Location: ../views/choferReservas.php?error=No autorizado");
                 exit;
             }
-            
+
             $stmt = mysqli_prepare($conexion, 
                 "UPDATE reservas 
                 SET estado = 'aceptada'
@@ -143,6 +145,7 @@
                 exit;
             }
             
+            // Rechazar la reserva
             $stmt = mysqli_prepare($conexion, 
                 "UPDATE reservas 
                 SET estado = 'rechazada'

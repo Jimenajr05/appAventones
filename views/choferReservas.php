@@ -1,20 +1,21 @@
 <?php
 // =====================================================
-// Script: choferReservas.php (Vista Chofer)
-// Descripción: Muestra las **Reservas** de los aventones
-// del chofer y permite **Aceptar/Rechazar** las solicitudes.
-// Creado por: Jimena y Fernanda.
+// Script: choferReservas.php (Vista/Controlador).
+// Descripción: Muestra las reservas de rides para choferes.
+// Creado por: Jimena Jara y Fernanda Sibaja.
 // =====================================================
 
 session_start();
 include("../includes/conexion.php");
 include("../logica/ChoferReservas.php");
 
+// Verificar que el usuario es un chofer
 if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
     header("Location: login.php");
     exit;
 }
 
+// ID del chofer en sesión
 $idChofer = $_SESSION['id_usuario'];
 
 // Foto de usuario del sistema
@@ -28,6 +29,7 @@ if (!empty($_SESSION['foto'])) {
     $fotoUsuario = "../assets/Estilos/Imagenes/default-user.png";
 }
 
+// Mensaje opcional
 $mensaje = $_GET['msg'] ?? "";
 
 // Llamar la lógica separada 
@@ -37,6 +39,7 @@ $reservas = $model->obtenerReservas($idChofer);
 // Buffer para usar los resultados 2 veces
 $rows = $reservas;
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -153,8 +156,12 @@ $rows = $reservas;
                     <td>
                         <?php
                             switch ($r['estado']) {
-                                case 'cancelada': echo '❌ Cancelada'; break;
-                                case 'rechazada': echo '🚫 Rechazada'; break;
+                                case 'cancelada': 
+                                    echo '❌ Cancelada'; 
+                                    break;
+                                case 'rechazada': 
+                                    echo '🚫 Rechazada'; 
+                                    break;
                             }
                         ?>
                     </td>

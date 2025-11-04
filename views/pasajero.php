@@ -1,26 +1,25 @@
 <?php 
     // =====================================================
-    // Script: pasajero.php
-    // Descripción: **Panel principal** del Pasajero. Actúa
-    // como menú, ofreciendo enlaces a **Buscar Rides** y
-    // a **Mis Reservas**.
-    // Creado por: Jimena y Fernanda.
+    // Script: pasajero.php (Vista/Controlador).
+    // Descripción: Panel principal para usuarios tipo pasajero.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     session_start();
     include("../includes/conexion.php");
 
+    // Verificar que el usuario es un pasajero
     if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'pasajero') {
         header("Location: login.php");
         exit;
     }
 
+    // Obtener datos del pasajero
     $idPasajero = $_SESSION['id_usuario'];
     $mensaje = $_GET['msg'] ?? "";
     
      // Foto de usuario del sistema
     if (!empty($_SESSION['foto'])) {
-        // Si ya trae "uploads/" entonces la ruta es correcta
         if (str_starts_with($_SESSION['foto'], 'uploads/')) {
             $fotoUsuario = "../" . $_SESSION['foto'] . "?v=" . time();
         } else {
@@ -41,14 +40,12 @@
         <link rel="stylesheet" href="../assets/Estilos/pasajero.css">
     </head>
     <body>
-        <!-- HEADER PRINCIPAL -->
         <header class="header-pasajero">
         <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
         <h1>Bienvenido a <span class="resaltado">Aventones.com</span></h1>
         <h2>Tu mejor opción para viajar seguros</h2>
         </header>
 
-        <!-- TOOLBAR -->
         <nav class="toolbar">
             <div class="toolbar-left">
                 <a href="pasajero.php" class="nav-link active">Panel de Pasajero</a>

@@ -1,10 +1,8 @@
 <?php
     // =====================================================
-    // Script: index.php
-    // Descripción: **Página de Inicio**. **Redirecciona**
-    // usuarios logueados. Permite la **Búsqueda pública de Rides**
-    // por texto o **Mapa Leaflet**.
-    // Creado por: Jimena y Fernanda.
+    // Script: index.php 
+    // Descripción: Página principal con buscador público de rides.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     session_start();
@@ -34,17 +32,21 @@
     $params = [];
     $types = "";
 
+    // Filtros de búsqueda
     if (!empty($origen)) {
         $sql .= " AND r.inicio LIKE ?";
         $params[] = "%$origen%";
         $types .= "s";
     }
+
+    // Filtros de búsqueda
     if (!empty($destino)) {
         $sql .= " AND r.fin LIKE ?";
         $params[] = "%$destino%";
         $types .= "s";
     }
 
+    // Ordenar por fecha y hora
     $sql .= " ORDER BY r.dia ASC, r.hora ASC";
     $stmt = $conexion->prepare($sql);
     if ($params) $stmt->bind_param($types, ...$params);
@@ -60,7 +62,6 @@
         <title>Inicio | Aventones</title>
         <link rel="stylesheet" href="assets/Estilos/index.css">
 
-        <!-- Leaflet -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     </head>

@@ -1,15 +1,13 @@
 <?php
     // =====================================================
-    // Script: rides.php (Lógica de Negocio)
-    // Descripción: Define la clase **Ride**. Gestiona las
-    // operaciones CRUD (Crear, Obtener, Actualizar, Eliminar)
-    // de los aventones. Incluye validaciones de negocio como
-    // capacidad del vehículo y reglas de costo/horario.
-    // Creado por: Jimena y Fernanda.
+    // Lógica: rides.php
+    // Descripción: Manejo de rides para choferes.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // ===================================================== 
 
     include_once("../includes/conexion.php");
 
+    // Clase para manejar rides
     class Ride {
         private $conexion;
 
@@ -17,6 +15,7 @@
             $this->conexion = $conexion;
         }
 
+        // Obtener vehículo del chofer para validaciones
         private function obtenerVehiculoDelChofer($idVehiculo, $idChofer) {
             $sql = "SELECT id_vehiculo, capacidad, anno FROM vehiculos WHERE id_vehiculo=? AND id_chofer=?";
             $stmt = $this->conexion->prepare($sql);
@@ -25,6 +24,7 @@
             return $stmt->get_result()->fetch_assoc();
         }
 
+        // Función para validar el costo según las reglas
         private function validarCosto($costo, $dia, $hora) {
             $min = 500;
             $dia = trim($dia);
@@ -46,9 +46,10 @@
             }
         }
 
+        // Función para validar rides duplicados
         private function validarRideDuplicado($idChofer, $idVehiculo, $dia, $hora, $idRide = null) {
             if ($idRide) {
-                // Validación cuando EDITA (excluye su propio ID)
+                // Validación cuando EDITA
                 $sql = "SELECT id_ride FROM rides 
                         WHERE id_chofer=? AND id_vehiculo=? AND dia=? AND hora=? AND id_ride <> ?";
                 $stmt = $this->conexion->prepare($sql);
@@ -69,6 +70,7 @@
             }
         }
 
+        // Obtener todos los rides de un chofer
         public function obtenerRides($idChofer) {
             $sql = "SELECT r.*, v.marca, v.modelo, v.placa 
                     FROM rides r 
@@ -80,14 +82,25 @@
             return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         }
 
+        // Obtener un ride específico
+        public function obtenerRide($idRide, $idChofer) {
+            $sql = "SELECT * FROM rides WHERE id_ride=? AND id_chofer=?";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param("ii", $idRide, $idChofer);
+            $stmt->execute();
+            return $stmt->get_result()->fetch_assoc();
+        }
+
+        // Guardar (crear o editar) un ride
         public function guardarRide($data, $idChofer) {
             $idVehiculo = (int)$data['id_vehiculo'];
             $espacios = (int)$data['espacios'];
             $costo = (float)$data['costo'];
             $dia = $data['dia'];
             $hora = $data['hora'];
+            $idRide = $data['id_ride'] ?? null; // Obtener el ID del ride si existe
 
-            // Validar vehículo y capacidad
+            // Validar vehículo
             $veh = $this->obtenerVehiculoDelChofer($idVehiculo, $idChofer);
             if (!$veh) {
                 throw new Exception("Vehículo inválido.");
@@ -108,11 +121,31 @@
             // Validar costo con reglas
             $this->validarCosto($costo, $dia, $hora);
 
-            // Validar ride duplicado ANTES DE GUARDAR
-            $idRide = $data['id_ride'] ?? null;
-            $this->validarRideDuplicado($idChofer, $idVehiculo, $dia, $hora, $idRide);
+            // Lógica para condicionar la validación de duplicado 
+            $debeValidarDuplicado = true;
 
-            if (empty($data['id_ride'])) {
+            // Si es edición, verificamos si los campos clave cambiaron
+            if ($idRide) {
+                $rideOriginal = $this->obtenerRide((int)$idRide, $idChofer);
+                
+                // Comprobamos si los campos clave (vehículo, día, hora) son IGUALES
+                if ($rideOriginal && 
+                    (int)$rideOriginal['id_vehiculo'] === $idVehiculo &&
+                    $rideOriginal['dia'] === $dia && 
+                    $rideOriginal['hora'] === $hora
+                ) {
+                    // Si todos los campos clave son iguales, no es necesario validar duplicado.
+                    $debeValidarDuplicado = false;
+                }
+            }
+            
+            // Solo validamos duplicado si es un ride nuevo O si cambió algún campo clave
+            if ($debeValidarDuplicado) {
+                $this->validarRideDuplicado($idChofer, $idVehiculo, $dia, $hora, $idRide);
+            }
+
+            // Preparar y ejecutar la consulta
+            if (empty($idRide)) {
                 $sql = "INSERT INTO rides (id_chofer, id_vehiculo, nombre, inicio, fin, hora, dia, costo, espacios)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $this->conexion->prepare($sql);
@@ -133,6 +166,13 @@
                         SET id_vehiculo=?, nombre=?, inicio=?, fin=?, hora=?, dia=?, costo=?, espacios=?
                         WHERE id_ride=? AND id_chofer=?";
                 $stmt = $this->conexion->prepare($sql);
+                
+                // Verificación de error 
+                if ($stmt === false) {
+                    throw new Exception("Error interno: Falló la preparación de la consulta de actualización. Revise los nombres de sus columnas en la tabla 'rides'.");
+                }
+
+                // Vincular parámetros para actualización
                 $stmt->bind_param(
                     "isssssdiii",
                     $idVehiculo,
@@ -143,14 +183,15 @@
                     $dia,
                     $costo,
                     $espacios,
-                    $data['id_ride'],
+                    $idRide,
                     $idChofer
                 );
             }
+            
             // Manejo de ejecución y errores MySQL
             if (!$stmt->execute()) {
-                if ($stmt->errno == 1062) {
-                    throw new Exception("⚠️ Ya existe un ride con este vehículo el mismo día y a la misma hora.");
+                if (empty($idRide) && $stmt->errno == 1062) {
+                    throw new Exception("⚠ Ya existe un ride con este vehículo el mismo día y a la misma hora.");
                 }
                 throw new Exception("Error al guardar el ride: " . $stmt->error);
             }
@@ -158,14 +199,7 @@
             return true;
         }
 
-        public function obtenerRide($idRide, $idChofer) {
-            $sql = "SELECT * FROM rides WHERE id_ride=? AND id_chofer=?";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("ii", $idRide, $idChofer);
-            $stmt->execute();
-            return $stmt->get_result()->fetch_assoc();
-        }
-
+        // Eliminar un ride
         public function eliminarRide($idRide, $idChofer) {
             $sql = "DELETE FROM rides WHERE id_ride=? AND id_chofer=?";
             $stmt = $this->conexion->prepare($sql);
@@ -173,6 +207,7 @@
             return $stmt->execute();
         }
 
+        // Obtener vehículos de un chofer
         public function obtenerVehiculos($idChofer) {
             $sql = "SELECT id_vehiculo, marca, modelo, placa, capacidad, anno 
                     FROM vehiculos WHERE id_chofer=?";

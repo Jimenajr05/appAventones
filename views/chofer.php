@@ -1,11 +1,8 @@
 <?php
 // =====================================================
-// Script: chofer.php (Vista/Controlador de Chofer)
-// Descripción: Panel de **Gestión de Aventones (Rides)**.
-// Maneja la **lógica CRUD** de los rides (Crear, Editar,
-// Eliminar) y renderiza el formulario y la tabla. Integra
-// un **Mapa Leaflet** para la selección de coordenadas.
-// Creado por: Jimena y Fernanda.
+// Script: chofer.php (Vista/Controlador).
+// Descripción: Panel principal para choferes: gestionar rides.
+// Creado por: Jimena Jara y Fernanda Sibaja.
 // =====================================================
 
 session_start();
@@ -18,6 +15,7 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
     exit;
 }
 
+// Instanciar clase Ride
 $ride = new Ride($conexion);
 $idChofer = (int)$_SESSION['id_usuario'];
 
@@ -70,6 +68,7 @@ $inicioLng = $editar['inicio_lng'] ?? -84.087502;
 $finLat    = $editar['fin_lat'] ?? 9.934739;
 $finLng    = $editar['fin_lng'] ?? -84.087502;
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -77,24 +76,19 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
     <meta charset="UTF-8">
     <title>Panel del Chofer | Aventones</title>
 
-    <!-- Estilos globales -->
     <link rel="stylesheet" href="../assets/Estilos/chofer.css">
 
-    <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 
 <body>
-
-    <!-- ENCABEZADO -->
     <header class="hero-header">
         <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
         <h1>Bienvenido <span class="resaltado">Aventones.com</span></h1>
         <h2>Tu mejor opción para viajar seguros</h2>
     </header>
 
-    <!-- TOOLBAR -->
     <nav class="toolbar">
         <div class="toolbar-left">
             <a href="chofer.php" class="nav-link active">Rides</a>
@@ -109,18 +103,16 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
         </div>
     </nav>
 
-    <!-- CONTENIDO -->
     <section class="container">
 
         <h2><?= $editar ? "Editar Ride" : "Nuevo Ride"; ?></h2>
-
+        <!-- Mensaje de error -->
         <?php if (!empty($errorMsg)): ?>
             <p class="alert" style="color:red;background:#fee;border:1px solid #faa;padding:.7rem;border-radius:6px;">
                 <?= htmlspecialchars($errorMsg) ?>
             </p>
         <?php endif; ?>
 
-        <!-- FORMULARIO -->
         <form method="POST" class="formulario" id="formRide">
 
             <?php if ($editar): ?>
@@ -151,6 +143,7 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
                 <div>
                     <label>Día:</label>
                     <select name="dia" required>
+                        <!-- Opciones de días de la semana -->
                         <?php
                         $dias = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
                         foreach ($dias as $d) {
@@ -165,6 +158,7 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
                     <label>Vehículo:</label>
                     <select name="id_vehiculo" required>
                         <option value="">Seleccione...</option>
+                        <!-- Opciones de vehículos -->
                         <?php foreach ($vehiculos as $v): ?>
                         <option value="<?= (int)$v['id_vehiculo']; ?>"
                             <?= ($editar && (int)$editar['id_vehiculo'] === (int)$v['id_vehiculo']) ? 'selected' : ''; ?>>
@@ -203,7 +197,7 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
 
         </form>
 
-        <!-- TABLA DE RIDES -->
+        <!-- Listado de rides -->
         <h2>Rides Registrados</h2>
 
         <div class="table-container">
@@ -252,12 +246,12 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
 
     </section>
 
-    <!-- FOOTER -->
+
     <footer>
         <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
     </footer>
 
-    <!-- SCRIPT MAPA LEAFLET -->
+    <!-- MAPA -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
 
@@ -271,7 +265,7 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
         let markerFin = null;
         let polyline = null;
 
-        let seleccion = "inicio"; // Primer clic origen, segundo destino
+        let seleccion = "inicio"; 
 
         const hint = document.getElementById("map-hint");
 
@@ -323,7 +317,7 @@ $finLng    = $editar['fin_lng'] ?? -84.087502;
                 hint.innerHTML = "✅ Origen y destino listos. Puedes guardar el ride.";
             }
 
-            // ✅ Dibujar línea
+            // Dibujar línea
             if (markerInicio && markerFin) {
                 if (polyline) map.removeLayer(polyline);
 

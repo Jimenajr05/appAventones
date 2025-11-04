@@ -1,15 +1,15 @@
 <?php
 // =====================================================
-// Script: registrarUsuario.php (Lógica)
-// Procesa el REGISTRO de usuarios con validación,
-// subida de foto, hash de contraseña, activación email,
-// y ahora INICIA SESIÓN + carga foto correcta ✅
+// Lógica: registrarUsuario.php 
+// Descripción: Procesa el registro de nuevos usuarios.
+// Creado por: Jimena Jara y Fernanda Sibaja.
 // =====================================================
 
 session_start();
 include("../includes/conexion.php");
 include("../includes/enviarCorreo.php");
 
+// Procesar el formulario al enviarse
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $tipo             = trim($_POST['tipo']);
@@ -42,6 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: ../views/registro.php"); exit();
     }
 
+    // Verificar edad
     $nac = new DateTime($fecha_nacimiento);
     $hoy = new DateTime();
     $edad = $hoy->diff($nac)->y;
@@ -51,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: ../views/registro.php"); exit();
     }
 
+    // Verificar duplicados
     $verDup = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE cedula=? OR correo=? OR telefono=?");
     $verDup->bind_param("sss", $cedula, $correo, $telefono);
     $verDup->execute();
@@ -87,6 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $token = bin2hex(random_bytes(32));
 
+    // Insertar usuario
     $stmt = $conexion->prepare("INSERT INTO usuarios 
         (nombre, apellido, cedula, fecha_nacimiento, correo, telefono, fotografia, contrasena, tipo, estado, token_activacion)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', ?)");

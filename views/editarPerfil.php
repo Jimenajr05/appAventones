@@ -2,11 +2,13 @@
 session_start();
 include("../includes/conexion.php");
 
+// Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit;
 }
 
+// Obtener datos del usuario
 $id = $_SESSION['id_usuario'];
 $result = $conexion->query("SELECT * FROM usuarios WHERE id_usuario=$id");
 $usuario = $result->fetch_assoc();
@@ -86,7 +88,8 @@ $foto = (!empty($_SESSION['foto']))
         <input type="submit" value="Guardar Cambios" class="btn">
 
     </form>
-
+    
+    <!-- Volver al panel correspondiente -->
     <?php
     $volver = "#";
     if (isset($_SESSION['tipo'])) {

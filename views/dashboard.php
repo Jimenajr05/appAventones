@@ -1,10 +1,9 @@
 <?php
     // =====================================================
     // Script: dashboard.php
-    // Descripción: **Redirecciona** al usuario a su panel
-    // específico (`administrador.php`, `chofer.php`, `pasajero.php`)
-    // basándose en el tipo de sesión activa.
-    // Creado por: Jimena y Fernanda.
+    // Descripción: Redirige a los usuarios a sus paneles 
+    // correspondientes según su tipo de cuenta.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     session_start();
@@ -13,6 +12,7 @@
         exit;
     }
 
+    // Redirigir según el tipo de usuario
     $redireccion = '';
     switch ($_SESSION['tipo']) {
         case 'administrador':
@@ -28,6 +28,7 @@
             $redireccion = 'login.php';
     }
 
+    // Realizar la redirección
     if (!empty($redireccion)) {
         header("Location: $redireccion");
         exit;

@@ -1,21 +1,20 @@
 <?php
     // =====================================================
-    // Script: vehiculos.php (Lógica)
-    // Descripción: **Controlador CRUD de Vehículos**. Gestiona
-    // la **Creación, Edición y Eliminación** de vehículos
-    // de un Chofer, incluyendo el manejo de la **fotografía**.
-    // Creado por: Fernanda y Jimena.
+    // Lógica: vehiculos.php
+    // Descripción: Manejo de vehículos para choferes.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     session_start();
     include("../includes/conexion.php");
 
-    // Seguridad: solo chofer
+    // Verificar sesión de chofer
     if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
         header("Location: ../views/login.php");
         exit;
     }
 
+    // Obtener ID del chofer desde la sesión
     $idChofer = $_SESSION['id_usuario'];
     $accion = $_GET['accion'] ?? '';
     $mensaje = "";
@@ -31,13 +30,13 @@
         $anno = (int)($_POST['anno'] ?? 0);
         $capacidad = (int)($_POST['capacidad'] ?? 0);
         
-        // Validar color permitido (asumo que tienes esta lógica)
+        // Validar color permitido
         $coloresPermitidos = [
             "Blanco","Negro","Gris","Plata","Azul","Rojo","Verde",
             "Amarillo","Naranja","Café","Beige","Vino","Turquesa","Morado"
         ];
         if (!in_array($color, $coloresPermitidos)) {
-            $mensaje = "Error: El color seleccionado no es válido.";
+            $mensaje = "El color seleccionado no es válido.";
             header("Location: ../views/vehiculos.php?msg=" . urlencode($mensaje));
             exit;
         }
@@ -57,7 +56,6 @@
             $ruta_completa_servidor = $directorio_destino . $nombre_archivo;
             
             if (move_uploaded_file($_FILES['fotografia']['tmp_name'], $ruta_completa_servidor)) {
-                // RUTA A GUARDAR EN LA BASE DE DATOS (relativa desde la raíz del proyecto)
                 $foto_ruta = "uploads/vehiculos/" . $nombre_archivo; 
             } else {
                 $mensaje = "Error al mover el archivo subido.";
@@ -66,66 +64,76 @@
             }
         }
 
-        // Insertar o actualizar
-        if (!empty($_POST['id_vehiculo'])) {
-            // Actualizar vehículo existente
-            $idVehiculo = (int)$_POST['id_vehiculo'];
-            $ok = false;
+        // Insertar o actualizar vehículo
+        try {
 
-            if ($foto_ruta) {
-                // Actualizar con nueva foto
-                $sql = "UPDATE vehiculos 
-                        SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=?, fotografia=? 
-                        WHERE id_vehiculo=? AND id_chofer=?";
-                $stmt = $conexion->prepare($sql);
-                $stmt->bind_param("ssssiisii",
-                    $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta, $idVehiculo, $idChofer
-                );
+            if (!empty($_POST['id_vehiculo'])) {
+
+                // Actualizar vehículo existente
+                $idVehiculo = (int)$_POST['id_vehiculo'];
+                $ok = false;
+
+                // Si se subió una nueva foto, actualizar la ruta
+                if ($foto_ruta) {
+                    $sql = "UPDATE vehiculos 
+                            SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=?, fotografia=? 
+                            WHERE id_vehiculo=? AND id_chofer=?";
+                    $stmt = $conexion->prepare($sql);
+                    $stmt->bind_param("ssssiisii",
+                        $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta, $idVehiculo, $idChofer
+                    );
+                // Si no, no actualizar la foto
+                } else {
+                    $sql = "UPDATE vehiculos 
+                            SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=? 
+                            WHERE id_vehiculo=? AND id_chofer=?";
+                    $stmt = $conexion->prepare($sql);
+                    $stmt->bind_param("ssssiiii",
+                        $marca, $modelo, $placa, $color, $anno, $capacidad, $idVehiculo, $idChofer
+                    );
+                }
+
+                if ($stmt) {
+                    $ok = $stmt->execute();
+                }
+                $mensaje = $ok ? "Vehículo actualizado correctamente." : "Error al actualizar vehículo: " . $conexion->error;
+
             } else {
-                // Si no hay nueva foto, NO incluir la columna fotografia en el UPDATE
-                $sql = "UPDATE vehiculos 
-                        SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=? 
-                        WHERE id_vehiculo=? AND id_chofer=?";
+
+                // Insertar nuevo vehículo
+                $sql = "INSERT INTO vehiculos (id_chofer, marca, modelo, placa, color, anno, capacidad, fotografia)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conexion->prepare($sql);
-                $stmt->bind_param("ssssiiii",
-                    $marca, $modelo, $placa, $color, $anno, $capacidad, $idVehiculo, $idChofer
+                $stmt->bind_param("issssiss", 
+                    $idChofer, $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta
                 );
-            }
 
-            if ($stmt) {
                 $ok = $stmt->execute();
+                $mensaje = $ok ? "Vehículo agregado correctamente." : "Error al agregar vehículo: " . $conexion->error;
             }
-            $mensaje = $ok ? "Vehículo actualizado correctamente." : "Error al actualizar vehículo: " . $conexion->error;
-
-        } else {
-            // Insertar nuevo vehículo
-            $sql = "INSERT INTO vehiculos (id_chofer, marca, modelo, placa, color, anno, capacidad, fotografia)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $conexion->prepare($sql);
-            $stmt->bind_param("issssiss", 
-                $idChofer, $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta
-            );
-
-            $ok = $stmt->execute();
-            $mensaje = $ok ? "Vehículo agregado correctamente." : "Error al agregar vehículo: " . $conexion->error;
+        } catch (mysqli_sql_exception $e) {
+            // Capturar error de placa duplicada
+            if ($e->getCode() == 1062) {
+                $mensaje = "La placa '$placa' ya está registrada.";
+            } else {
+                $mensaje = "Error inesperado al registrar vehículo.";
+            }
         }
 
         header("Location: ../views/vehiculos.php?msg=" . urlencode($mensaje));
         exit;
     }
 
-    // Eliminar vehículo
+    // Eliminar Vehículo
     if ($accion === "eliminar" && isset($_GET['id'])) {
         $id = (int)$_GET['id'];
         
-        // Opcional: Obtener la ruta de la imagen para eliminarla del servidor
         $sqlSelect = "SELECT fotografia FROM vehiculos WHERE id_vehiculo=? AND id_chofer=?";
         $stmtSelect = $conexion->prepare($sqlSelect);
         $stmtSelect->bind_param("ii", $id, $idChofer);
         $stmtSelect->execute();
         $foto_a_eliminar = $stmtSelect->get_result()->fetch_assoc()['fotografia'] ?? null;
         
-        // Eliminar registro de la DB
         $sql = "DELETE FROM vehiculos WHERE id_vehiculo=? AND id_chofer=?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("ii", $id, $idChofer);
@@ -133,7 +141,6 @@
         
         if ($ok) {
             $mensaje = "Vehículo eliminado correctamente.";
-            // Eliminar archivo físico si existe
             if ($foto_a_eliminar && file_exists("../" . $foto_a_eliminar)) {
                 unlink("../" . $foto_a_eliminar);
             }

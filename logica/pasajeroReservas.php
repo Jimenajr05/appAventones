@@ -1,10 +1,11 @@
 <?php
 // =====================================================
-// LOGICA: PasajeroReservas.php
-// Maneja reservas del pasajero: listar y cancelar
-// Creado por: Jimena y Fernanda.
+// Lógica: pasajeroReservas.php
+// Descripción: Maneja la lógica relacionada con las reservas de los pasajeros.
+// Creado por: Jimena Jara y Fernanda Sibaja.
 // =====================================================
 
+// Clase PasajeroReservas
 class PasajeroReservas {
     private $conexion;
 
@@ -12,6 +13,7 @@ class PasajeroReservas {
         $this->conexion = $conexion;
     }
 
+    // Obtener reservas de un pasajero
     public function obtenerReservas($idPasajero) {
         $sql = "SELECT r.id_reserva, r.estado, r.fecha_reserva,
                        d.nombre AS ride, d.inicio, d.fin, d.dia, d.hora, d.costo,

@@ -1,6 +1,14 @@
 <?php 
+// =====================================================
+// Script: activar.php (Vista/Controlador).
+// Descripción: Página de activación de cuenta para usuarios.
+// Creado por: Jimena Jara y Fernanda Sibaja.
+// =====================================================
+
+// Obtener el estado de activación desde la URL
 $status = $_GET['status'] ?? 'error';
 
+// Definición de mensajes según el estado
 $messages = [
     'ok'      => ['✅ ¡Cuenta activada con éxito!', 'success', 'Tu cuenta ha sido activada correctamente. Ya puedes iniciar sesión.'],
     'invalid' => ['❌ Token inválido', 'error', 'El enlace de activación no es válido.'],
@@ -9,6 +17,7 @@ $messages = [
     'error'   => ['⚠️ Error en la activación', 'error', 'Hubo un problema, intenta de nuevo.']
 ];
 
+// Seleccionar el mensaje correspondiente
 [$title, $type, $text] = $messages[$status];
 ?>
 
@@ -32,7 +41,8 @@ $messages = [
     <div class="card <?= $type ?>">
         <h2><?= $title ?></h2>
         <p><?= $text ?></p>
-
+        
+        <!-- Botón para iniciar sesión o volver al login -->
         <?php if ($status === 'ok'): ?>
             <a href="login.php" class="btn">Iniciar Sesión</a>
         <?php else: ?>

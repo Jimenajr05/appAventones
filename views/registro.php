@@ -1,12 +1,12 @@
 <!-- 
     // =====================================================
-    // Script: registro.php
-    // Descripción: Muestra el **formulario para registrar** un
-    // nuevo usuario (pasajero o chofer). La lógica de
-    // procesamiento es `../logica/registrarUsuario.php`.
-    // Creado por: Jimena y Fernanda.
+    // Script: registro.php (Vista/Controlador).
+    // Descripción: Vista para el registro de nuevos usuarios 
+    // en el sistema Aventones.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
  -->
+    
 <!DOCTYPE html>
 <html lang="es">
     <head>

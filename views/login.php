@@ -1,10 +1,8 @@
 <!-- 
   // =====================================================
-  // Script: login.php (Vista)
-  // Descripción: Página principal de **Inicio de Sesión**.
-  // Muestra el formulario de login y errores de sesión.
-  // La lógica de autenticación se envía a `../logica/login.php`.
-  // Creado por: Jimena y  Fernanda.
+  // Script: login.php (Vista/Controlador).
+  // Descripción: Formulario de inicio de sesión para usuarios registrados.
+  // Creado por: Jimena Jara y Fernanda Sibaja.
   // =====================================================
 -->
   

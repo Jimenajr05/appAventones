@@ -1,36 +1,34 @@
 <?php
     // =====================================================
-    // Script: vehiculos.php
-    // Descripción: Panel de **CRUD de Vehículos** del Chofer.
-    // Muestra el formulario de registro/edición y la lista
-    // de vehículos. La lógica es `../logica/vehiculos.php`.
-    // Creado por: Jimena y Fernanda.
+    // Script: vehiculos.php (Vista/Controlador).
+    // Descripción: Gestión de vehículos para choferes.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     session_start();
     include("../includes/conexion.php");
 
+    // Verificar sesión y tipo de usuario
     if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'chofer') {
         header("Location: login.php");
         exit;
     }
 
+    // ID del chofer en sesión
     $idChofer = $_SESSION['id_usuario'];
     
     // Foto de usuario del sistema
     if (!empty($_SESSION['foto'])) {
-        // Si ya trae "uploads/" entonces la ruta es correcta
         if (str_starts_with($_SESSION['foto'], 'uploads/')) {
             $fotoUsuario = "../" . $_SESSION['foto'] . "?v=" . time();
         } else {
-            // Compatibilidad con fotos antiguas
             $fotoUsuario = "../assets/Estilos/Imagenes/" . $_SESSION['foto'] . "?v=" . time();
         }
     } else {
-        // Default
         $fotoUsuario = "../assets/Estilos/Imagenes/default-user.png";
     }
 
+    // Mensaje de operación
     $mensaje = $_GET['msg'] ?? "";
 
     // Obtener lista de vehículos
@@ -40,7 +38,7 @@
     $stmt->execute();
     $vehiculos = $stmt->get_result();
 
-    // Modo edición
+    // Verificar si se está editando un vehículo
     $vehiculoEdit = null;
     if (isset($_GET['accion']) && $_GET['accion'] === 'editar' && isset($_GET['id'])) {
         $idVehiculo = $_GET['id'];
@@ -60,14 +58,12 @@
     </head>
     <body>
 
-        <!-- ENCABEZADO SUPERIOR -->
         <header class="hero-header">
             <img src="../assets/Estilos/Imagenes/logo.png" alt="Logo Aventones" class="logo-hero">
             <h1>Bienvenido <span class="resaltado">Aventones.com</span></h1>
             <h2>Tu mejor opción para viajar seguros</h2>
         </header>
 
-        <!-- TOOLBAR INFERIOR -->
         <nav class="toolbar">
             <div class="toolbar-left">
                 <a href="chofer.php" class="nav-link">Rides</a>
@@ -82,7 +78,6 @@
             </div>
         </nav>
 
-        <!-- CONTENIDO PRINCIPAL -->
         <section class="container">
             <?php if ($mensaje): ?>
                 <p class="alert"><?= htmlspecialchars($mensaje); ?></p>
@@ -94,7 +89,6 @@
                 <?php if ($vehiculoEdit): ?>
                     <input type="hidden" name="id_vehiculo" value="<?= $vehiculoEdit['id_vehiculo']; ?>">
                 <?php endif; ?>
-
                 <?php
                 $opcionesColor = [
                     "Blanco","Negro","Gris","Plata","Azul","Rojo","Verde",

@@ -1,21 +1,24 @@
 <?php
     // =====================================================
-    // Script: mail.php
+    // Script: correoReservas.php
     // Descripción: Define la clase EmailService para gestionar
     // y enviar correos electrónicos (como notificaciones de
     // reserva) utilizando la librería PHPMailer. Incluye la
     // configuración de conexión SMTP.
-    // Creado por: Jimena y Fernanda
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // ===================================================== 
 
+    // Incluir las clases de PHPMailer
     require __DIR__ . '/../phpmailer/src/PHPMailer.php';
     require __DIR__ . '/../phpmailer/src/SMTP.php';
     require __DIR__ . '/../phpmailer/src/Exception.php';
 
+    // Usar los espacios de nombres de PHPMailer
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
 
+    // Clase para gestionar el envío de correos electrónicos
     class EmailService {
         private $mailer;
 
@@ -33,6 +36,7 @@
             $this->mailer->isHTML(true);
         }
 
+        // Método para enviar notificación de reserva pendiente
         public function enviarNotificacionReserva($correo, $nombre, $detallesReserva) {
             try {
                 $this->mailer->setFrom('noreply@aventones.com', 'Aventones');

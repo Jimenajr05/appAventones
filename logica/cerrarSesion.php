@@ -1,4 +1,10 @@
 <?php
+    // =====================================================
+    // Lógica: cerrarSesion.php
+    // Descripción: Este archivo cierra la sesión del usuario y lo redirige al login.php.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
+    // =====================================================
+
     // Iniciar sesión para poder destruirla
     session_start();
 

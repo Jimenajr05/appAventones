@@ -1,10 +1,10 @@
 <?php
     // =====================================================
-    // Script: notificarReservas.php
-    // Descripción: Revisa reservas pendientes y notifica
-    // a choferes si llevan más de X minutos sin responder.
-    // Creado por: Jimena y Fernanda.
-    // LLamar con: C:\xampp\php\php.exe logica\notificarReservas.php 5
+    // Lógica: notificarReservas.php
+    // Descripción: Notifica a los choferes sobre reservas pendientes
+    // mayores a X minutos (por consola).
+    // Ejecutar con: C:\xampp\php\php.exe logica\notificarReservas.php 5
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     date_default_timezone_set('America/Costa_Rica');
@@ -49,16 +49,17 @@
             WHERE r.estado = 'pendiente'
             ORDER BY r.fecha_reserva ASC";
 
-    $res = $conexion->query($sql);
+    $resultado = $conexion->query($sql);
 
-    if (!$res) {
+    if (!$resultado) {
         die("{$red}❌ Error en la consulta: {$conexion->error}{$reset}\n");
     }
 
     // Agrupar pendientes 
     $reservasPendientes = [];
 
-    while ($fila = $res->fetch_assoc()) {
+    // Recorrer resultados
+    while ($fila = $resultado->fetch_assoc()) {
         if ($fila['minutos_pendiente'] > $minutos) {
             $reservasPendientes[$fila['id_chofer']][] = $fila;
         }
@@ -71,7 +72,7 @@
     }
 
     // Email y Log
-    require_once __DIR__ . '/../includes/mail.php';
+    require_once __DIR__ . '/../includes/correoReservas.php';
     $emailService = new EmailService();
 
     $log = __DIR__ . '/../logs/notificaciones.log';
@@ -82,6 +83,7 @@
     echo " CHOFER           | RIDE             | MIN ESPERA\n";
     echo "============================================================={$reset}\n";
 
+    // Enviar notificaciones
     foreach ($reservasPendientes as $idChofer => $reservas) {
 
         $chofer = $reservas[0]['chofer'];
@@ -91,12 +93,23 @@
         foreach ($reservas as $r) {
             $detallesHTML .= "<li>Reserva #{$r['id_reserva']} de {$r['ride']} (pendiente hace {$r['minutos_pendiente']} minutos)</li>";
 
+            $min = $r['minutos_pendiente'];
+            $horas = floor($min / 60);
+            $mins = $min % 60;
+
+            if ($horas > 0) {
+                $tiempoTexto = "{$horas}h {$mins}m";
+            } else {
+                $tiempoTexto = "{$mins}m";
+            }
+
             printf(
-                " %-15s | %-15s | %s min\n",
+                " %-15s | %-15s | %s\n",
                 $r['chofer'],
                 $r['ride'],
-                $r['minutos_pendiente']
+                $tiempoTexto
             );
+
         }
 
         $enviado = $emailService->enviarNotificacionReserva($correo, $chofer, $detallesHTML);

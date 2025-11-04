@@ -1,11 +1,12 @@
 <?php
 // =====================================================
-// VISTA: buscarRides.php (Pasajero)
-// Muestra filtros, tabla de rides y mapa Leaflet
-// Llama a la lógica /logica/BuscarRide.php
-// Creado por: Fernanda y Jimena.
+// Script: buscarRides.php (Vista/Controlador).
+// Descripción: Página para que los pasajeros busquen rides
+// según origen, destino y ordenamiento.
+// Creado por: Jimena Jara y Fernanda Sibaja.
 // =====================================================
 
+// Iniciar sesión y cargar dependencias
 session_start();
 include("../includes/conexion.php");
 include("../logica/buscarRides.php");
@@ -20,10 +21,10 @@ if (!empty($_SESSION['foto'])) {
 }
 
 // Parámetros GET
-$origen     = trim($_GET['origen'] ?? '');
-$destino    = trim($_GET['destino'] ?? '');
-$ordenar    = $_GET['ordenar'] ?? 'fecha';
-$direccion  = strtoupper($_GET['direccion'] ?? 'ASC');
+$origen = trim($_GET['origen'] ?? '');
+$destino = trim($_GET['destino'] ?? '');
+$ordenar = $_GET['ordenar'] ?? 'fecha';
+$direccion = strtoupper($_GET['direccion'] ?? 'ASC');
 
 // Ejecutar la lógica
 $buscador = new BuscarRide($conexion);
@@ -118,6 +119,7 @@ $finLng    = -84.087502;
 
     <h2>Resultados de Rides</h2>
 
+    <!-- Tabla de rides -->
     <?php if (count($rides) > 0): ?>
         <div class="table-container">
             <table>
@@ -138,6 +140,7 @@ $finLng    = -84.087502;
                 </thead>
 
                 <tbody>
+                <!-- Mostrar rides -->
                 <?php foreach ($rides as $r): ?>
                     <tr>
                         <td>
@@ -160,6 +163,7 @@ $finLng    = -84.087502;
                         <td>₡<?= number_format($r['costo'], 2); ?></td>
                         <td><?= htmlspecialchars($r['espacios']); ?></td>
 
+                        <!-- Botón reservar -->
                         <?php if ($_SESSION['tipo'] === 'pasajero'): ?>
                             <td>
                                 <a href="../logica/reservas.php?accion=crear&id_ride=<?= $r['id_ride']; ?>" class="btn-reservar">
@@ -183,32 +187,41 @@ $finLng    = -84.087502;
     <p>© <?= date("Y") ?> Aventones | Universidad Técnica Nacional</p>
 </footer>
 
+<!-- Script del mapa Leaflet -->
 <script>
+// Inicializar mapa
 document.addEventListener("DOMContentLoaded", () => {
+    // Configurar mapa
     const mapDiv = document.getElementById("map");
     mapDiv.style.height = "400px";
 
+    // Crear mapa centrado en Alajuela
     const map = L.map('map').setView([10.01625, -84.21163], 9);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
+    // Marcadores y lógica de selección
     let marcadorOrigen = null, marcadorDestino = null;
     let seleccion = "origen";
     const hint = document.getElementById("map-hint");
 
+    // Función para verificar si el lugar está en Alajuela
     function esAlajuela(texto) {
         return texto.toLowerCase().includes("alajuela");
     }
 
+    // Función para obtener lugar desde coordenadas
     async function getLugar(lat, lng) {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
         const data = await res.json();
         return data.display_name || `${lat}, ${lng}`;
     }
 
+    // Manejar clics en el mapa
     map.on("click", async e => {
         const { lat, lng } = e.latlng;
         const lugar = await getLugar(lat, lng);
 
+        // Validar que esté en Alajuela
         if (!esAlajuela(lugar)) {
             hint.classList.add("map-error");
             hint.innerHTML = "❌ Solo se permiten ubicaciones dentro de <b>Alajuela</b>";
@@ -217,6 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
             hint.classList.remove("map-error");
         }
 
+        // Colocar marcador y actualizar inputs
         if (seleccion === "origen") {
             if (marcadorOrigen) map.removeLayer(marcadorOrigen);
             marcadorOrigen = L.marker([lat, lng]).addTo(map).bindPopup("📍 Origen").openPopup();
@@ -231,6 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
             hint.innerHTML = "✅ Origen y destino listos. Puedes buscar.";
         }
 
+        // Dibujar línea entre origen y destino
         if (marcadorOrigen && marcadorDestino) {
             const puntos = [marcadorOrigen.getLatLng(), marcadorDestino.getLatLng()];
             L.polyline(puntos, { color: "blue" }).addTo(map);

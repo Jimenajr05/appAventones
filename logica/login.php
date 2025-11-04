@@ -1,16 +1,14 @@
 <?php
     // =====================================================
-    // Script: login.php (Lógica)
-    // Descripción: Procesa el **Inicio de Sesión**. **Valida**
-    // credenciales y estado de la cuenta. Crea la **sesión**
-    // y **redirecciona** al dashboard según el **tipo** de
-    // usuario.
-    // Llamar con: POST desde `login.php`.
+    // Lógica: login.php
+    // Descripción: Procesa el inicio de sesión de usuarios.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     session_start();
     include("../includes/conexion.php");
 
+    // Verificar si el formulario fue enviado
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $correo = trim($_POST['correo'] ?? '');
         $contrasena = $_POST['contrasena'] ?? '';
@@ -28,6 +26,7 @@
         $stmt->execute();
         $stmt->store_result();
 
+        // Verificar si se encontró el usuario
         if ($stmt->num_rows === 1) {
             $stmt->bind_result($id_usuario, $nombre, $tipo, $hash_contrasena, $estado, $fotografia);
             $stmt->fetch();
@@ -40,6 +39,7 @@
                 $loginValido = true;
             }
 
+            // Procesar resultado del login
             if ($loginValido) {
                 if ($estado === 'activo') {
                     // Guardamos datos en sesión
@@ -47,9 +47,9 @@
                     $_SESSION['nombre'] = $nombre;
                     $_SESSION['tipo'] = $tipo;
                     if ($fotografia && file_exists("../" . $fotografia)) {
-                        $_SESSION['foto'] = $fotografia;  // solo "uploads/usuarios/xxx.png"
+                        $_SESSION['foto'] = $fotografia;  
                     } else {
-                        $_SESSION['foto'] = "assets/Estilos/Imagenes/default-user.png"; //ruta interna
+                        $_SESSION['foto'] = "assets/Estilos/Imagenes/default-user.png";
                     }
 
                     // Redirección según tipo
@@ -68,6 +68,7 @@
                             break;
                     }
 
+                    // Cerrar declaración y conexión
                     $stmt->close();
                     include("../includes/cerrarConexion.php");
                     exit;

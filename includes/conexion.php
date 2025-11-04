@@ -1,9 +1,8 @@
 <?php
     // =====================================================
     // Script: conexion.php
-    // Descripción: Establece la conexión con la base de datos 'aventones'.
-    // En caso de fallo, detiene la ejecución y muestra un error.
-    // By: Jimena y Fernanda
+    // Descripción: Establece la conexión a la base de datos MySQL.
+    // Creado por: Jimena Jara y Fernanda Sibaja.
     // =====================================================
 
     $servidor = "localhost";

@@ -1,10 +1,10 @@
 <?php
 // =====================================================
-// Script: administrador.php (Vista/Controlador)
+// Script: administrador.php (Vista/Controlador).
 // Descripción: Panel de control exclusivo para el Administrador.
 // Incluye la lógica de gestión (activar/desactivar usuarios
 // y crear admins) y renderiza la vista.
-// Creado por: Jimena y Fernanda.
+// Creado por: Jimena Jara y Fernanda Sibaja.
 // =====================================================
 
 session_start();
@@ -17,6 +17,7 @@ if (!isset($_SESSION['tipo']) || $_SESSION['tipo'] !== 'administrador') {
     exit;
 }
 
+// Instanciar la clase Administrador
 $admin = new Administrador($conexion);
 
 // Crear nuevo administrador
@@ -48,6 +49,7 @@ if (!empty($_SESSION['foto'])) {
     $fotoUsuario = "../assets/Estilos/Imagenes/default-user.png";
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -66,7 +68,6 @@ if (!empty($_SESSION['foto'])) {
     <p>Tu mejor opción para viajar seguros</p>
 </header>
 
-<!-- TOOLBAR -->
 <nav class="toolbar">
     <div class="toolbar-left"></div>
     <div class="toolbar-right">
@@ -94,6 +95,7 @@ if (!empty($_SESSION['foto'])) {
                 </tr>
             </thead>
             <tbody>
+                <!-- Mostrar usuarios -->
                 <?php foreach ($usuarios as $usuario): ?>
                 <tr>
                     <td><?= $usuario['id_usuario']; ?></td>
@@ -171,6 +173,7 @@ if (!empty($_SESSION['foto'])) {
 
     <input type="submit" name="crearAdmin" value="Crear Administrador" class="btn btn-blue">
 
+        <!-- Mensaje de éxito/error -->
         <?php
         if (isset($_SESSION['mensaje'])) {
             echo "<div class='mensaje'>" . $_SESSION['mensaje'] . "</div>";
