@@ -73,6 +73,29 @@
                 $idVehiculo = (int)$_POST['id_vehiculo'];
                 $ok = false;
 
+                // Validación: no reducir capacidad si afecta rides existentes
+                $sqlCap = "SELECT capacidad FROM vehiculos WHERE id_vehiculo=? AND id_chofer=?";
+                $stmtCap = $conexion->prepare($sqlCap);
+                $stmtCap->bind_param("ii", $idVehiculo, $idChofer);
+                $stmtCap->execute();
+                $vehActual = $stmtCap->get_result()->fetch_assoc();
+
+                if ($vehActual && $capacidad < $vehActual['capacidad']) {
+                    $sqlRides = "SELECT COUNT(*) as total 
+                                FROM rides 
+                                WHERE id_vehiculo=? AND espacios > ?";
+                    $stmtRides = $conexion->prepare($sqlRides);
+                    $stmtRides->bind_param("ii", $idVehiculo, $capacidad);
+                    $stmtRides->execute();
+                    $ridesConflict = $stmtRides->get_result()->fetch_assoc()['total'];
+
+                    if ($ridesConflict > 0) {
+                        $mensaje = "⚠️ No puedes reducir la capacidad del vehículo a {$capacidad}, porque existen rides con más espacios asignados.";
+                        header("Location: ../views/vehiculos.php?msg=" . urlencode($mensaje));
+                        exit;
+                    }
+                }
+
                 // Si se subió una nueva foto, actualizar la ruta
                 if ($foto_ruta) {
                     $sql = "UPDATE vehiculos 
@@ -82,7 +105,6 @@
                     $stmt->bind_param("ssssiisii",
                         $marca, $modelo, $placa, $color, $anno, $capacidad, $foto_ruta, $idVehiculo, $idChofer
                     );
-                // Si no, no actualizar la foto
                 } else {
                     $sql = "UPDATE vehiculos 
                             SET marca=?, modelo=?, placa=?, color=?, anno=?, capacidad=? 
@@ -112,7 +134,6 @@
                 $mensaje = $ok ? "Vehículo agregado correctamente." : "Error al agregar vehículo: " . $conexion->error;
             }
         } catch (mysqli_sql_exception $e) {
-            // Capturar error de placa duplicada
             if ($e->getCode() == 1062) {
                 $mensaje = "La placa '$placa' ya está registrada.";
             } else {
